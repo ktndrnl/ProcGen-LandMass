@@ -67,7 +67,7 @@ public class MapGenerator : MonoBehaviour
 		else if (drawMode == DrawMode.Mesh)
 		{
 			display.DrawMesh(
-				MeshGenerator.GenerateTerrainMesh(mapData.heightMap, meshHeightMultiplier, meshHeightCurve, editorPreviewLod, isFlatShaded),
+				MeshGenerator.GenerateTerrainMesh(mapData.heightMap, meshHeightMultiplier, meshHeightCurve, editorPreviewLod),
 				TextureGenerator.TextureFromColorMap(mapData.colorMap, mapChunkSize, mapChunkSize));
 		}
 		else if (drawMode == DrawMode.FalloffMap)
@@ -108,7 +108,7 @@ public class MapGenerator : MonoBehaviour
 	private void MeshDataThread(MapData mapData, int lod, Action<MeshData> callback)
 	{
 		MeshData meshData = MeshGenerator.GenerateTerrainMesh(
-			mapData.heightMap, meshHeightMultiplier, meshHeightCurve, lod, isFlatShaded);
+			mapData.heightMap, meshHeightMultiplier, meshHeightCurve, lod);
 		lock (meshDataThreadInfoQueue)
 		{
 			meshDataThreadInfoQueue.Enqueue(new MapThreadInfo<MeshData>(callback, meshData));

@@ -5,7 +5,7 @@ using UnityEngine;
 public static class MeshGenerator
 {
 	public static MeshData GenerateTerrainMesh(float[,] heightMap, float heightMultiplier, AnimationCurve _heightCurve,
-											   int levelOfDetail, bool isFlatshaded)
+											   int levelOfDetail)
 	{
 		AnimationCurve heightCurve = new AnimationCurve(_heightCurve.keys);
 		int meshSimplificationIncrement = (levelOfDetail == 0) ? 1 : levelOfDetail * 2;
@@ -71,46 +71,19 @@ public static class MeshGenerator
 				vertexIndex++;
 			}
 		}
-
-		if (isFlatshaded)
-		{
-			return RecalculateFlatShadedMeshData(meshData);
-		}
 		
-		return meshData;
-	}
-	
-	//TODO: Fix
-	private static MeshData RecalculateFlatShadedMeshData(MeshData meshData)
-	{
-		Vector3[] oldVerts = meshData.vertices;
-		Vector2[] oldUvs = meshData.uvs;
-		int[] triangles = meshData.triangles;
-         
- 
-		Vector3[] vertices = new Vector3[triangles.Length];
-		Vector2[] uvs = new Vector2[triangles.Length];
- 
-		for (int i = 0; i < triangles.Length; i++)
-		{
-			vertices[i] = oldVerts[triangles[i]];
-			uvs[i] = oldUvs[triangles[i]];
-			triangles[i] = i;
-		}
- 
-		meshData.vertices = vertices;
-		meshData.triangles = triangles;
-		meshData.uvs = uvs;
-
+		meshData.BakeNormals();
+		
 		return meshData;
 	}
 }
 
 public class MeshData
 {
-	public Vector3[] vertices;
-	public int[] triangles;
-	public Vector2[] uvs;
+	private Vector3[] vertices;
+	private int[] triangles;
+	private Vector2[] uvs;
+	private Vector3[] bakedNormals;
 
 	private Vector3[] borderVertices;
 	private int[] borderTriangles;
@@ -219,6 +192,11 @@ public class MeshData
 		Vector3 sideAC = pointC - pointA;
 		return Vector3.Cross(sideAB, sideAC).normalized;
 	}
+
+	public void BakeNormals()
+	{
+		bakedNormals = CalculateNormals();
+	}
 	
 	public Mesh CreateMesh()
 	{
@@ -226,7 +204,7 @@ public class MeshData
 		mesh.vertices = vertices;
 		mesh.triangles = triangles;
 		mesh.uv = uvs;
-		mesh.normals = CalculateNormals();
+		mesh.normals = bakedNormals;
 		return mesh;
 	}
 }
