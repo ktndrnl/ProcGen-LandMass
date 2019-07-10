@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class EndlessTerrain : MonoBehaviour
 {
-	private const float scale = 5f;
 	
 	private const float viewerMoveThresholdForChunkUpdate = 25f;
 	private const float sqrViewerMoveThresholdForChunkUpdate =
@@ -31,7 +29,7 @@ public class EndlessTerrain : MonoBehaviour
 		mapGenerator = FindObjectOfType<MapGenerator>();
 
 		maxViewDst = detailLevels[detailLevels.Length - 1].visibleDstThreshhold;
-		chunkSize = MapGenerator.mapChunkSize - 1;
+		chunkSize = mapGenerator.mapChunkSize - 1;
 		chunksVisibleInViewDst = Mathf.RoundToInt(maxViewDst / chunkSize);
 		
 		UpdateVisibleChunks();
@@ -39,7 +37,7 @@ public class EndlessTerrain : MonoBehaviour
 
 	private void Update()
 	{
-		viewerPosition = new Vector2(viewer.position.x, viewer.position.z) / scale;
+		viewerPosition = new Vector2(viewer.position.x, viewer.position.z) / mapGenerator.terrainData.uniformSccale;
 		if ((viewerPositionOld - viewerPosition).sqrMagnitude > sqrViewerMoveThresholdForChunkUpdate)
 		{
 			viewerPositionOld = viewerPosition;
@@ -109,9 +107,9 @@ public class EndlessTerrain : MonoBehaviour
 			meshCollider = meshObject.AddComponent<MeshCollider>();
 			meshRenderer.material = material;
 			
-			meshObject.transform.position = positionV3 * scale;
+			meshObject.transform.position = positionV3 * mapGenerator.terrainData.uniformSccale;
 			meshObject.transform.parent = parent;
-			meshObject.transform.localScale = Vector3.one * scale;
+			meshObject.transform.localScale = Vector3.one * mapGenerator.terrainData.uniformSccale;
 			SetVisible(false);
 			
 			lodMeshes = new LODMesh[detailLevels.Length];
@@ -132,11 +130,6 @@ public class EndlessTerrain : MonoBehaviour
 			this.mapData = mapData;
 			mapDataReceived = true;
 
-			Texture2D texture =
-				TextureGenerator.TextureFromColorMap(mapData.colorMap, MapGenerator.mapChunkSize,
-					MapGenerator.mapChunkSize);
-			meshRenderer.material.mainTexture = texture;
-			
 			UpdateTerrainChunk();
 		}
 
@@ -238,7 +231,7 @@ public class EndlessTerrain : MonoBehaviour
 
 	}
 
-	[System.Serializable]
+	[Serializable]
 	public struct LODInfo
 	{
 		public int lod;
