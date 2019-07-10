@@ -14,9 +14,11 @@ public class MapGenerator : MonoBehaviour
 
 	public DrawMode drawMode;
 
+	public bool isFlatShaded;
+
 	public Noise.NormalizeMode normalizeMode;
 
-	public const int mapChunkSize = 241;
+	public static int mapChunkSize = 241;
 	[Range(0,6)]
 	public int editorPreviewLod;
 	public float noiseScale;
@@ -54,7 +56,7 @@ public class MapGenerator : MonoBehaviour
 		else if (drawMode == DrawMode.Mesh)
 		{
 			display.DrawMesh(
-				MeshGenerator.GenerateTerrainMesh(mapData.heightMap, meshHeightMultiplier, meshHeightCurve, editorPreviewLod),
+				MeshGenerator.GenerateTerrainMesh(mapData.heightMap, meshHeightMultiplier, meshHeightCurve, editorPreviewLod, isFlatShaded),
 				TextureGenerator.TextureFromColorMap(mapData.colorMap, mapChunkSize, mapChunkSize));
 		}
 	}
@@ -91,7 +93,7 @@ public class MapGenerator : MonoBehaviour
 	private void MeshDataThread(MapData mapData, int lod, Action<MeshData> callback)
 	{
 		MeshData meshData = MeshGenerator.GenerateTerrainMesh(
-			mapData.heightMap, meshHeightMultiplier, meshHeightCurve, lod);
+			mapData.heightMap, meshHeightMultiplier, meshHeightCurve, lod, isFlatShaded);
 		lock (meshDataThreadInfoQueue)
 		{
 			meshDataThreadInfoQueue.Enqueue(new MapThreadInfo<MeshData>(callback, meshData));
@@ -150,6 +152,8 @@ public class MapGenerator : MonoBehaviour
 	
 	private void OnValidate()
 	{
+		mapChunkSize = isFlatShaded ? 97 : 241;
+		
 		if (lacunarity < 1)
 		{
 			lacunarity = 1;
