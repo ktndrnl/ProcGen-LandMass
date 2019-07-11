@@ -43,8 +43,9 @@ public class EndlessTerrain : MonoBehaviour
 
 		if (viewerPosition != viewerPositionOld)
 		{
-			foreach (TerrainChunk chunk in visibleTerrainChunks)
+			for (int i = 0; i < visibleTerrainChunks.Count; i++)
 			{
+				TerrainChunk chunk = visibleTerrainChunks[i];
 				chunk.UpdateCollisionMesh();
 			}
 		}
@@ -93,6 +94,8 @@ public class EndlessTerrain : MonoBehaviour
 	public class TerrainChunk
 	{
 		public Vector2 coord;
+		public static int newestChunkId;
+		public int chunkId;
 		
 		private GameObject meshObject;
 		private Vector2 position;
@@ -116,6 +119,7 @@ public class EndlessTerrain : MonoBehaviour
 			this.coord = coord;
 			this.detailLevels = detailLevels;
 			this.colliderLODIndex = colliderLODIndex;
+			chunkId = newestChunkId++;
 			
 			position = coord * size;
 			bounds = new Bounds(position, Vector2.one * size);
@@ -192,7 +196,10 @@ public class EndlessTerrain : MonoBehaviour
 						}
 					}
 
-					visibleTerrainChunks.Add(this);
+					if (!visibleTerrainChunks.Contains(this))
+					{
+						visibleTerrainChunks.Add(this);
+					}
 				}
 
 				if (wasVisible != visible)
