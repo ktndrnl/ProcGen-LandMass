@@ -24,7 +24,7 @@ public class TextureData : UpdateableData
 		material.SetFloatArray("baseBlends", layers.Select(x => x.blendStrength).ToArray());
 		material.SetFloatArray("baseColorStrengths", layers.Select(x => x.tintStrength).ToArray());
 		material.SetFloatArray("baseTextureScales", layers.Select(x => x.textureScale).ToArray());
-		Texture2DArray texturesArray = GenerateTextureArray(layers.Select(x => x.texture).ToArray());
+		Texture2DArray texturesArray = GenerateTextureArray(layers.Select(x => x.Texture).ToArray());
 		material.SetTexture("baseTextures", texturesArray);
 
 		UpdateMeshHeights(material, savedMinHeight, savedMaxHeight);
@@ -54,7 +54,26 @@ public class TextureData : UpdateableData
 	[Serializable]
 	public class Layer
 	{
-		public Texture2D texture;
+		public bool useTexture;
+		[SerializeField]
+		private Texture2D texture;
+		[HideInInspector]
+		public Texture2D Texture
+		{
+			get
+			{
+				if (useTexture)
+				{
+					return texture;
+				}
+				else
+				{
+					texture = new Texture2D(textureSize, textureSize);
+					return texture;
+				}
+			}
+		}
+
 		public Color tint;
 		[Range(0, 1)]
 		public float tintStrength;
