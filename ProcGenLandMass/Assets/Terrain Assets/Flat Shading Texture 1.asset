@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2a9a2ddf24b6a9d41b7b31aaf5e7ceb2, type: 3}
-  m_Name: Flat Shading Texture
+  m_Name: Flat Shading Texture 1
   m_EditorClassIdentifier: 
-  autoUpdate: 0
+  autoUpdate: 1
   layers:
   - useTexture: 0
     texture: {fileID: 0}
@@ -25,14 +25,14 @@ MonoBehaviour:
     texture: {fileID: 0}
     tint: {r: 0.68416315, g: 0.764151, b: 0.4289338, a: 0}
     tintStrength: 1
-    startHeight: 0.068
+    startHeight: 0.048
     blendStrength: 0.004
     textureScale: 10
   - useTexture: 0
     texture: {fileID: 0}
     tint: {r: 0.13443395, g: 0.5, b: 0.14118981, a: 0}
     tintStrength: 1
-    startHeight: 0.08
+    startHeight: 0.056
     blendStrength: 0
     textureScale: 10
   - useTexture: 0
@@ -51,8 +51,8 @@ MonoBehaviour:
     textureScale: 10
   - useTexture: 0
     texture: {fileID: 0}
-    tint: {r: 0.2264151, g: 0.13136348, b: 0.13136348, a: 0}
+    tint: {r: 1, g: 1, b: 1, a: 0}
     tintStrength: 1
-    startHeight: 1
-    blendStrength: 0.307
+    startHeight: 0.929
+    blendStrength: 0.1
     textureScale: 10
