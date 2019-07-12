@@ -28,6 +28,7 @@ public class TerrainGenerator : MonoBehaviour
 	private Dictionary<Vector2, TerrainChunk> terrainChunkDictionary = new Dictionary<Vector2, TerrainChunk>();
 	private HashSet<TerrainChunk> visibleTerrainChunks = new HashSet<TerrainChunk>();
 	private HashSet<TerrainChunk> visibleTerrainChunksToRemove = new HashSet<TerrainChunk>();
+	private bool iteratingOverVisibleTerrainChunks;
 
 	private void Start()
 	{
@@ -63,11 +64,13 @@ public class TerrainGenerator : MonoBehaviour
 	private void UpdateVisibleChunks()
 	{
 		HashSet<Vector2> alreadyUpdatedChunkCoords = new HashSet<Vector2>();
+		iteratingOverVisibleTerrainChunks = true;
 		foreach (TerrainChunk chunk in visibleTerrainChunks)
 		{
 			alreadyUpdatedChunkCoords.Add(chunk.coord);
 			chunk.UpdateTerrainChunk();
 		}
+		iteratingOverVisibleTerrainChunks = false;
 
 		foreach (TerrainChunk chunk in visibleTerrainChunksToRemove)
 		{
@@ -109,6 +112,10 @@ public class TerrainGenerator : MonoBehaviour
 		if (isVisible)
 		{
 			visibleTerrainChunks.Add(chunk);
+		}
+		else if (iteratingOverVisibleTerrainChunks)
+		{
+			visibleTerrainChunksToRemove.Add(chunk);
 		}
 		else
 		{

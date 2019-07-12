@@ -84,7 +84,7 @@ public class TerrainChunk
 		UpdateTerrainChunk();
 	}
 
-	private Vector2 viewerPosition => new Vector2(viewer.position.x, viewer.position.y);
+	private Vector2 viewerPosition => new Vector2(viewer.position.x, viewer.position.z);
 
 	public void UpdateTerrainChunk()
 	{

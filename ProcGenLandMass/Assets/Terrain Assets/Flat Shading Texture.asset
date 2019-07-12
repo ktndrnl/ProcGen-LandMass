@@ -51,8 +51,8 @@ MonoBehaviour:
     textureScale: 10
   - useTexture: 0
     texture: {fileID: 0}
-    tint: {r: 0.2264151, g: 0.13136348, b: 0.13136348, a: 0}
+    tint: {r: 0.22745098, g: 0.12941177, b: 0.12941177, a: 0}
     tintStrength: 1
     startHeight: 1
-    blendStrength: 0.307
+    blendStrength: 0.28
     textureScale: 10
