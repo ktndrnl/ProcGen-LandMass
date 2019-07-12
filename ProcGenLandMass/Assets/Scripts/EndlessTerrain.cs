@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class EndlessTerrain : MonoBehaviour
@@ -24,7 +25,8 @@ public class EndlessTerrain : MonoBehaviour
 	private int chunksVisibleInViewDst;
 
 	private Dictionary<Vector2, TerrainChunk> terrainChunkDictionary = new Dictionary<Vector2, TerrainChunk>();
-	private static List<TerrainChunk> visibleTerrainChunks = new List<TerrainChunk>();
+	private static HashSet<TerrainChunk> visibleTerrainChunks = new HashSet<TerrainChunk>();
+	private static HashSet<TerrainChunk> visibleTerrainChunksToRemove = new HashSet<TerrainChunk>();
 
 	private void Start()
 	{
@@ -43,9 +45,8 @@ public class EndlessTerrain : MonoBehaviour
 
 		if (viewerPosition != viewerPositionOld)
 		{
-			for (int i = 0; i < visibleTerrainChunks.Count; i++)
+			foreach(TerrainChunk chunk in visibleTerrainChunks)
 			{
-				TerrainChunk chunk = visibleTerrainChunks[i];
 				chunk.UpdateCollisionMesh();
 			}
 		}
@@ -60,11 +61,18 @@ public class EndlessTerrain : MonoBehaviour
 	private void UpdateVisibleChunks()
 	{
 		HashSet<Vector2> alreadyUpdatedChunkCoords = new HashSet<Vector2>();
-		for (int i = visibleTerrainChunks.Count - 1; i >= 0; i--)
+		foreach (TerrainChunk chunk in visibleTerrainChunks)
 		{
-			alreadyUpdatedChunkCoords.Add(visibleTerrainChunks[i].coord);
-			visibleTerrainChunks[i].UpdateTerrainChunk();
+			alreadyUpdatedChunkCoords.Add(chunk.coord);
+			chunk.UpdateTerrainChunk();
 		}
+
+		foreach (TerrainChunk chunk in visibleTerrainChunksToRemove)
+		{
+			visibleTerrainChunks.Remove(chunk);
+		}
+		
+		visibleTerrainChunksToRemove.Clear();
 		
 		int currentChunkCoordX = Mathf.RoundToInt(viewerPosition.x / chunkSize);
 		int currentChunkCoordY = Mathf.RoundToInt(viewerPosition.y / chunkSize);
@@ -196,10 +204,7 @@ public class EndlessTerrain : MonoBehaviour
 						}
 					}
 
-					if (!visibleTerrainChunks.Contains(this))
-					{
-						visibleTerrainChunks.Add(this);
-					}
+					visibleTerrainChunks.Add(this);
 				}
 
 				if (wasVisible != visible)
@@ -210,7 +215,7 @@ public class EndlessTerrain : MonoBehaviour
 					}
 					else
 					{
-						visibleTerrainChunks.Remove(this);
+						visibleTerrainChunksToRemove.Add(this);
 					}
 					SetVisible(visible);
 				}
