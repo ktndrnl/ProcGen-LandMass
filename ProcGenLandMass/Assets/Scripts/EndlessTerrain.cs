@@ -17,8 +17,8 @@ public class EndlessTerrain : MonoBehaviour
 	public Transform viewer;
 	public Material mapMaterial;
 
-	public static Vector2 viewerPosition;
-	private Vector2 viewerPositionOld;
+	public static Vector3 viewerPosition;
+	private Vector3 viewerPositionOld;
 	private static MapGenerator mapGenerator;
 	private int chunkSize;
 	private int chunksVisibleInViewDst;
@@ -39,7 +39,7 @@ public class EndlessTerrain : MonoBehaviour
 
 	private void Update()
 	{
-		viewerPosition = new Vector2(viewer.position.x, viewer.position.z) / mapGenerator.terrainData.uniformScale;
+		viewerPosition = new Vector3(viewer.position.x, viewer.position.z, 0) / mapGenerator.terrainData.uniformScale;
 
 		if (viewerPosition != viewerPositionOld)
 		{
