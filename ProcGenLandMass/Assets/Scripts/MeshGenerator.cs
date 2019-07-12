@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using System.Collections;
 public static class MeshGenerator
 {
 	public static MeshData GenerateTerrainMesh(float[,] heightMap, MeshSettings meshSettings, int levelOfDetail)
@@ -71,12 +71,16 @@ public static class MeshGenerator
 						int dstToMainVertexB = skipIncrement - dstToMainVertexA;
 						float dstPercentFromAToB = dstToMainVertexA / (float) skipIncrement;
 
-						float heightMainVertexA = 
-							heightMap[isVertical ? x : x - dstToMainVertexA, isVertical ? y - dstToMainVertexA : y];
-						float heightMainVertexB = 
-							heightMap[isVertical ? x : x + dstToMainVertexB, isVertical ? y + dstToMainVertexB : y];
+                        Coord coordA = new Coord ((isVertical) ? x : x - dstToMainVertexA, (isVertical) ? y - dstToMainVertexA : y);
+                        Coord coordB = new Coord ((isVertical) ? x : x + dstToMainVertexB, (isVertical) ? y + dstToMainVertexB : y);
+ 
+                        float heightMainVertexA = heightMap [coordA.x,coordA.y];
+                        float heightMainVertexB = heightMap [coordB.x,coordB.y];
 
 						height = heightMainVertexA * (1 - dstPercentFromAToB) + heightMainVertexB * dstPercentFromAToB;
+ 
+                        EdgeConnectionVertexData edgeConnectionVertexData = new EdgeConnectionVertexData (vertexIndex, vertexIndicesMap [coordA.x, coordA.y], vertexIndicesMap [coordB.x, coordB.y], dstPercentFromAToB);
+                        meshData.DeclareEdgeConnectionVertex (edgeConnectionVertexData);
 					}
 					
 					meshData.AddVertex(
@@ -104,10 +108,36 @@ public static class MeshGenerator
 
 		return meshData;
 	}
+ 
+    public struct Coord {
+        public readonly int x;
+        public readonly int y;
+ 
+        public Coord (int x, int y)
+        {
+            this.x = x;
+            this.y = y;
+        }
+ 
+    }
 }
+public class EdgeConnectionVertexData {
+    public int vertexIndex;
+    public int mainVertexAIndex;
+    public int mainVertexBIndex;
+    public float dstPercentFromAToB;
 
-public class MeshData
+    public EdgeConnectionVertexData (int vertexIndex, int mainVertexAIndex, int mainVertexBIndex, float dstPercentFromAToB)
 {
+        this.vertexIndex = vertexIndex;
+        this.mainVertexAIndex = mainVertexAIndex;
+        this.mainVertexBIndex = mainVertexBIndex;
+        this.dstPercentFromAToB = dstPercentFromAToB;
+    }
+   
+ 
+}
+public class MeshData {
 	Vector3[] vertices;
 	int[] triangles;
 	Vector2[] uvs;
@@ -119,6 +149,9 @@ public class MeshData
 	int triangleIndex;
 	int outOfMeshTriangleIndex;
 
+    EdgeConnectionVertexData[] edgeConnectionVertices;
+    int edgeConnectionVertexIndex;
+ 
 	bool useFlatShading;
 
 	public MeshData(int numVertsPerLine, int skipIncrement, bool useFlatShading)
@@ -132,6 +165,7 @@ public class MeshData
 
 		vertices = new Vector3[numMeshEdgeVertices + numEdgeConnectionVertices + numMainVertices];
 		uvs = new Vector2[vertices.Length];
+        edgeConnectionVertices = new EdgeConnectionVertexData[numEdgeConnectionVertices];
 		
 		int numMeshEdgeTriangles = 8 * (numVertsPerLine - 4);
 		int numMainTriangles = (numMainVerticesPerLine - 1) * (numMainVerticesPerLine - 1) * 2;
@@ -172,6 +206,12 @@ public class MeshData
 		}
 	}
 
+ 
+    public void DeclareEdgeConnectionVertex(EdgeConnectionVertexData edgeConnectionVertexData) {
+        edgeConnectionVertices [edgeConnectionVertexIndex] = edgeConnectionVertexData;
+        edgeConnectionVertexIndex++;
+    }
+ 
 	Vector3[] CalculateNormals()
 	{
 		Vector3[] vertexNormals = new Vector3[vertices.Length];
@@ -223,6 +263,13 @@ public class MeshData
 		return vertexNormals;
 	}
 
+ 
+    void ProcessEdgeConnectionVertices() {
+        foreach (EdgeConnectionVertexData e in edgeConnectionVertices) {
+            bakedNormals [e.vertexIndex] = bakedNormals [e.mainVertexAIndex] * (1 - e.dstPercentFromAToB) + bakedNormals [e.mainVertexBIndex] * e.dstPercentFromAToB;
+        }
+    }
+ 
 	Vector3 SurfaceNormalFromIndices(int indexA, int indexB, int indexC)
 	{
 		Vector3 pointA = (indexA < 0) ? outOfMeshVertices[-indexA - 1] : vertices[indexA];
@@ -243,6 +290,7 @@ public class MeshData
 		else
 		{
 			BakeNormals();
+            ProcessEdgeConnectionVertices();
 		}
 	}
 
