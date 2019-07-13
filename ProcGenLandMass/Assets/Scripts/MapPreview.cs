@@ -15,6 +15,9 @@ public class MapPreview : MonoBehaviour
 
 	public DrawMode drawMode;
 
+	public bool useFixedHeightmap;
+	public Texture2D fixedHeightMap;
+
 	public MeshSettings meshSettings;
 	public HeightMapSettings heightMapSettings;
 	public TextureData textureData;
@@ -34,8 +37,17 @@ public class MapPreview : MonoBehaviour
 	{
 		textureData.ApplyToMaterial(terrainMaterial);
 		textureData.UpdateMeshHeights(terrainMaterial, heightMapSettings.minHeight, heightMapSettings.maxHeight);
-		HeightMap heightMap = HeightMapGenerator.GenerateHeightMap(meshSettings.numVerticesPerLine, 
-			meshSettings.numVerticesPerLine, heightMapSettings, Vector2.zero);
+		HeightMap heightMap;
+		if (useFixedHeightmap)
+		{
+			ImportedHeightMap importedHeightMap = ImportHeightMap.GenerateHeightMap(fixedHeightMap, meshSettings);
+			heightMap = ImportHeightMap.ChunkImportedHeightMap(importedHeightMap, meshSettings)[4];
+		}
+		else
+		{
+			heightMap = HeightMapGenerator.GenerateHeightMap(meshSettings.numVerticesPerLine, 
+				meshSettings.numVerticesPerLine, heightMapSettings, Vector2.zero);
+		}
 		MapPreview display = FindObjectOfType<MapPreview>();
 		if (drawMode == DrawMode.NoiseMap)
 		{
@@ -43,8 +55,7 @@ public class MapPreview : MonoBehaviour
 		}
 		else if (drawMode == DrawMode.Mesh)
 		{
-			DrawMesh(
-				MeshGenerator.GenerateTerrainMesh(heightMap.values, meshSettings, editorPreviewLod));
+			DrawMesh(MeshGenerator.GenerateTerrainMesh(heightMap.values, meshSettings, editorPreviewLod));
 		}
 		else if (drawMode == DrawMode.FalloffMap)
 		{
