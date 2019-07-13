@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 
 public class TerrainGenerator : MonoBehaviour
@@ -16,9 +15,12 @@ public class TerrainGenerator : MonoBehaviour
 	public MeshSettings meshSettings;
 	public HeightMapSettings heightMapSettings;
 	public TextureData textureSettings;
+	public WaterSettings waterSettings;
 
 	public Transform viewer;
 	public Material mapMaterial;
+
+	public bool readyForPlayer;
 
 	private Vector3 viewerPosition;
 	private Vector3 viewerPositionOld;
@@ -40,6 +42,7 @@ public class TerrainGenerator : MonoBehaviour
 		chunksVisibleInViewDst = Mathf.RoundToInt(maxViewDst / meshWorldSize);
 		
 		UpdateVisibleChunks();
+		readyForPlayer = true;
 	}
 
 	private void Update()
@@ -96,7 +99,7 @@ public class TerrainGenerator : MonoBehaviour
 					}
 					else
 					{
-						TerrainChunk newChunk = new TerrainChunk(viewedChunkCoord, heightMapSettings, meshSettings, 
+						TerrainChunk newChunk = new TerrainChunk(viewedChunkCoord, heightMapSettings, meshSettings, waterSettings,
 								detailLevels, colliderLODIndex, transform, viewer, mapMaterial);
 						terrainChunkDictionary.Add(viewedChunkCoord,newChunk);
 						newChunk.onVisibilityChanged += OnTerrainChunkVisibilityChanged;
@@ -130,6 +133,7 @@ public struct LODInfo
 	[Range(0, MeshSettings.numSupportedLODs - 1)]
 	public int lod;
 	public float visibleDstThreshold;
+	public bool waterVisible;
 
 	public float sqrVisibleDstThreshold => visibleDstThreshold * visibleDstThreshold;
 }

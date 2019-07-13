@@ -1,9 +1,11 @@
 using System;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public class TerrainChunk
 {
 	private const float colliderGenerationDistanceThreshold = 5f;
+	public const float waterPlaneScaleMultiplier = 2.94f;
 
 	public event Action<TerrainChunk, bool> onVisibilityChanged;
 	
@@ -16,6 +18,10 @@ public class TerrainChunk
 	private MeshRenderer meshRenderer;
 	private MeshFilter meshFilter;
 	private MeshCollider meshCollider;
+	
+	private GameObject waterObject;
+	private MeshRenderer waterMeshRenderer;
+	private MeshFilter waterMeshFilter;
 
 	private LODInfo[] detailLevels;
 	private LODMesh[] lodMeshes;
@@ -29,9 +35,10 @@ public class TerrainChunk
 
 	private HeightMapSettings heightMapSettings;
 	private MeshSettings meshSettings;
+	private WaterSettings waterSettings;
 	private Transform viewer;
 
-	public TerrainChunk(Vector2 coord, HeightMapSettings heightMapSettings, MeshSettings meshSettings,
+	public TerrainChunk(Vector2 coord, HeightMapSettings heightMapSettings, MeshSettings meshSettings, WaterSettings waterSettings,
 						LODInfo[] detailLevels, int colliderLODIndex, Transform parent, Transform viewer, Material material)
 	{
 		this.coord = coord;
@@ -39,6 +46,7 @@ public class TerrainChunk
 		this.colliderLODIndex = colliderLODIndex;
 		this.heightMapSettings = heightMapSettings;
 		this.meshSettings = meshSettings;
+		this.waterSettings = waterSettings;
 		this.viewer = viewer;
 
 		sampleCenter = coord * meshSettings.meshWorldSize / meshSettings.meshScale;
@@ -50,9 +58,15 @@ public class TerrainChunk
 		meshFilter = meshObject.AddComponent<MeshFilter>();
 		meshCollider = meshObject.AddComponent<MeshCollider>();
 		meshRenderer.material = material;
-
+		
 		meshObject.transform.position = new Vector3(position.x, 0, position.y);
 		meshObject.transform.parent = parent;
+		
+		waterObject = GameObject.Instantiate(waterSettings.waterPlanePrefab, meshObject.transform);
+		//TODO: way to set water height based on terrain texture settings | 1.78f
+		waterObject.transform.localPosition = new Vector3(0, waterSettings.waterHeight , 0);
+		waterObject.transform.localScale *= waterSettings.waterPlaneScaleMultiplier;
+
 		SetVisible(false);
 
 		lodMeshes = new LODMesh[detailLevels.Length];
@@ -78,7 +92,7 @@ public class TerrainChunk
 
 	private void OnHeightMapReceived(object heightMapObject)
 	{
-		this.heightMap = (HeightMap) heightMapObject;
+		heightMap = (HeightMap) heightMapObject;
 		heightMapReceived = true;
 
 		UpdateTerrainChunk();
@@ -122,6 +136,8 @@ public class TerrainChunk
 					{
 						lodMesh.RequestMesh(heightMap, meshSettings);
 					}
+
+					waterObject.SetActive(detailLevels[lodIndex].waterVisible);
 				}
 			}
 

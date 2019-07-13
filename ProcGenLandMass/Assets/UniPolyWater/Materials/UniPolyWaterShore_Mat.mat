@@ -11,7 +11,7 @@ Material:
   m_Shader: {fileID: 4800000, guid: 6ce962c9390af4b31a4f4fa6edd476a2, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
+  m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
@@ -68,25 +68,25 @@ Material:
     - _DstBlend: 0
     - _FoamMax: 10
     - _FoamMin: 10
-    - _GIntensity: 0.3
+    - _GIntensity: 0.2
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _Metallic: 0
+    - _Metallic: 0.3
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _RandomHeight: 0.2
+    - _RandomHeight: 3
     - _RandomSpeed: 3
-    - _ShoreThresholdMax: 0.5
-    - _Smoothness: 0
+    - _ShoreThresholdMax: 0.3
+    - _Smoothness: 0.3
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.43728328, g: 0.42168033, b: 0.8679245, a: 1}
+    - _Color: {r: 0, g: 0.7955981, b: 0.8867924, a: 1}
     - _Emission: {r: 0, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GAmplitude: {r: 0.69, g: 0.5, b: 0.6, a: 0.31}
