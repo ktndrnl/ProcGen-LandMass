@@ -7,13 +7,15 @@ public static class ImportHeightMap
 {
 	private static float[,] heightMapArray;
 
-	public static ImportedHeightMap GenerateHeightMap(Texture2D heightMapImage, MeshSettings meshSettings)
+	public static ImportedHeightMap GenerateHeightMap(Texture2D heightMapImage, MeshSettings meshSettings, HeightMapSettings heightMapSettings)
 	{
 		int chunkSize = meshSettings.numVerticesPerLine;
 		int numHorizontalChunksNeeded = 
 			(heightMapImage.width + chunkSize - 1) / chunkSize;
 		int numVerticalChunksNeeded = 
 			(heightMapImage.height + chunkSize - 1) / chunkSize;
+		
+		AnimationCurve heightCurve_threadsafe = new AnimationCurve(heightMapSettings.heightCurve.keys);
 
 		int width = numHorizontalChunksNeeded * chunkSize;
 		int height = numVerticalChunksNeeded * chunkSize;
@@ -53,6 +55,8 @@ public static class ImportHeightMap
 					colorValue = pixelColor.grayscale;
 				}
 
+				colorValue *= heightCurve_threadsafe.Evaluate(colorValue) * heightMapSettings.heightMultiplier;
+
 				if (colorValue > maxValue)
 				{
 					maxValue = colorValue;
@@ -74,34 +78,49 @@ public static class ImportHeightMap
 	{
 		int numChunksX = Mathf.RoundToInt(importedHeightMap.values.GetLength(0) / meshSettings.numVerticesPerLine);
 		int numChunksY = Mathf.RoundToInt(importedHeightMap.values.GetLength(1) / meshSettings.numVerticesPerLine);
+		int vertsPerLine = meshSettings.numVerticesPerLine;
 		
 		HeightMap[] heightMaps = new HeightMap[numChunksX * numChunksY];
-		float[,] heightMapValues = new float[meshSettings.numVerticesPerLine, meshSettings.numVerticesPerLine];
-		var byteLength = sizeof(float) * heightMapValues.Length;
-
-		for (int i = 0; i <  numChunksX * numChunksY; i++)
+		
+		for (int x = 0, i = 0; x < numChunksX; x++)
 		{
-			heightMapValues = new float[meshSettings.numVerticesPerLine, meshSettings.numVerticesPerLine];
-			Buffer.BlockCopy(importedHeightMap.values, byteLength * i, heightMapValues, 0, byteLength);
-			heightMaps[i] = new HeightMap(heightMapValues, 0, 1);
+			for (int y = 0; y < numChunksY; y++, i++)
+			{
+				float[,] h = new float[vertsPerLine, vertsPerLine];
+				int offsetX = x * vertsPerLine;
+				int offsetY = y * vertsPerLine;
+				for (int hx = 0; hx < vertsPerLine; hx++)
+				{
+					for (int hy = 0; hy < vertsPerLine; hy++)
+					{
+						h[hx, hy] = importedHeightMap.values[offsetX + hx, offsetY + hy];
+					}
+				}
+
+				float maxValue = float.MinValue;
+				float minValue = float.MaxValue;
+
+				for (int j = 0; j < h.GetLength(0); j++)
+				{
+					for (int k = 0; k < h.GetLength(1); k++)
+					{
+						if (h[j,k] > maxValue)
+						{
+							maxValue = h[j, k];
+						}
+
+						if (h[j,k] < minValue)
+						{
+							minValue = h[j, k];
+						}
+					}
+				}
+				
+				heightMaps[i] = new HeightMap(h, minValue, maxValue);
+			}
 		}
 
 		return heightMaps;
-
-		/*for (int chunksY = 0, x = 0, y = 0; chunksY < numChunksY; chunksY++, y += meshSettings.numVerticesPerLine)
-		{
-			for (int chunksX = 0; chunksX < numChunksX; chunksX++, x += meshSettings.numVerticesPerLine)
-			{
-				for (int i = 0; i < meshSettings.numVerticesPerLine; i++, y++)
-				{
-					for (int j = 0; j < meshSettings.numVerticesPerLine; j++, x++)
-					{
-						heightMapValues[i, j] = importedHeightMap.values[x, y];
-					}
-				}
-				heightMaps[numChunksY + numChunksX] = new HeightMap(heightMapValues, 0, 1);
-			}
-		}*/
 	}
 }
 

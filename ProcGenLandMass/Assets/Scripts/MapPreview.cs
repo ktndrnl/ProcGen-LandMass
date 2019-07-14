@@ -40,7 +40,7 @@ public class MapPreview : MonoBehaviour
 		HeightMap heightMap;
 		if (useFixedHeightmap)
 		{
-			ImportedHeightMap importedHeightMap = ImportHeightMap.GenerateHeightMap(fixedHeightMap, meshSettings);
+			ImportedHeightMap importedHeightMap = ImportHeightMap.GenerateHeightMap(fixedHeightMap, meshSettings, heightMapSettings);
 			heightMap = ImportHeightMap.ChunkImportedHeightMap(importedHeightMap, meshSettings)[4];
 		}
 		else
