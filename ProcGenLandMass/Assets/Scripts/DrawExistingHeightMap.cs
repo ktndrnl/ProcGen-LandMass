@@ -59,6 +59,16 @@ public class DrawExistingHeightMap : MonoBehaviour
 
 	private void GenerateChunks()
 	{
+		if (transform.childCount > 0)
+		{
+			foreach (Transform child in transform.GetComponentsInChildren<Transform>())
+			{
+				if (child.gameObject != this.gameObject)
+				{
+					DestroyImmediate(child.gameObject);
+				}
+			}
+		}
 		HeightMap[,] heightMaps = ImportHeightMap.ConvertToChunks(existingHeightMap, heightMapSettings, meshSettings);
 		for (int y = 0, yCoord = 0; y < heightMaps.GetLength(1); y++, yCoord += (int)((meshSettings.numVerticesPerLine - 6) * meshSettings.meshScale))
 		{
