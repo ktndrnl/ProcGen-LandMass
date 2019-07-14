@@ -14,7 +14,6 @@ public class DrawExistingHeightMap : MonoBehaviour
 
 	public bool ForceUpdate;
 
-	private ImportedHeightMap importedHeightMap;
 	private HeightMap[] heightMapChunks;
 	private HashSet<GameObject> chunks = new HashSet<GameObject>();
 
