@@ -20,6 +20,7 @@ public class TerrainGenerator : MonoBehaviour
 	public Transform viewer;
 	public Material mapMaterial;
 
+	[HideInInspector]
 	public bool readyForPlayer;
 
 	private Vector3 viewerPosition;
