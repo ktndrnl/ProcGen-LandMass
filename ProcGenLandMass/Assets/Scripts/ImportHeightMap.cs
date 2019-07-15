@@ -46,7 +46,7 @@ public static class ImportHeightMap
 		int horizontalPadding = (newWidth - mapImage.width) / 2;
 		int verticalPadding = (newHeight - mapImage.height) / 2;
 		resizedMapImage.SetPixels(
-			horizontalPadding, verticalPadding, mapImage.width, mapImage.height, mapImage.GetPixels());
+			0, 0, mapImage.width, mapImage.height, mapImage.GetPixels());
 
 		// Get pixel blocks corresponding to each chunk from resizedMapImage and convert them to 2d float arrays
 		int uniqueVertsPerChunk = numVertsPerLine - 6;
@@ -54,9 +54,17 @@ public static class ImportHeightMap
 		{
 			for (int xChunk = 0; xChunk < numHorizontalChunksNeeded; xChunk++, x += uniqueVertsPerChunk)
 			{
+				Color[] colors = resizedMapImage.GetPixels(x, y, numVertsPerLine, numVertsPerLine);
+				// Mirror image
+				for (int i = 0; i < colors.Length; i += numVertsPerLine)
+				{
+					Array.Reverse(colors, i, numVertsPerLine);
+				}
+				// Rotate image 180 degrees
+				Array.Reverse(colors, 0, colors.Length);
+				
 				heightMapValues[xChunk, yChunk] = ConvertColorsToHeightValues(
-					resizedMapImage.GetPixels(x, y, numVertsPerLine, numVertsPerLine),
-					numVertsPerLine, numVertsPerLine, heightMapSettings);
+					colors, numVertsPerLine, numVertsPerLine, heightMapSettings);
 			}
 		}
 
@@ -87,7 +95,7 @@ public static class ImportHeightMap
 				heightMapValues[x, y] = colorValue;
 			}
 		}
-
+		
 		return heightMapValues;
 	}
 

@@ -32,10 +32,20 @@ public class TerrainGenerator : MonoBehaviour
 	private HashSet<TerrainChunk> visibleTerrainChunksToRemove = new HashSet<TerrainChunk>();
 	private bool iteratingOverVisibleTerrainChunks;
 
+	private bool useExistingHeightMap;
+	private HeightMap[,] existingHeightMaps;
+
 	private void Start()
 	{
 		textureSettings.ApplyToMaterial(mapMaterial);
 		textureSettings.UpdateMeshHeights(mapMaterial, heightMapSettings.minHeight, heightMapSettings.maxHeight);
+
+		useExistingHeightMap = heightMapSettings.useExistingHeightMap;
+		if (useExistingHeightMap)
+		{
+			existingHeightMaps =
+				ImportHeightMap.ConvertToChunks(heightMapSettings.heightMapImage, heightMapSettings, meshSettings);
+		}
 		
 		float maxViewDst = detailLevels[detailLevels.Length - 1].visibleDstThreshold;
 		meshWorldSize = meshSettings.meshWorldSize;
@@ -100,7 +110,7 @@ public class TerrainGenerator : MonoBehaviour
 					else
 					{
 						TerrainChunk newChunk = new TerrainChunk(viewedChunkCoord, heightMapSettings, meshSettings, waterSettings,
-								detailLevels, colliderLODIndex, transform, viewer, mapMaterial);
+								detailLevels, colliderLODIndex, transform, viewer, mapMaterial, existingHeightMaps);
 						terrainChunkDictionary.Add(viewedChunkCoord,newChunk);
 						newChunk.onVisibilityChanged += OnTerrainChunkVisibilityChanged;
 						newChunk.Load();

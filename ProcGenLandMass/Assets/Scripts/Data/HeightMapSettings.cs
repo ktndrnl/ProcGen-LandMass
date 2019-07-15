@@ -7,6 +7,8 @@ public class HeightMapSettings : UpdateableData
 	public NoiseSettings noiseSettings;
 	
 	public bool useFalloff;
+	public bool useExistingHeightMap;
+	public Texture2D heightMapImage;
 
 	public float heightMultiplier;
 	public AnimationCurve heightCurve;

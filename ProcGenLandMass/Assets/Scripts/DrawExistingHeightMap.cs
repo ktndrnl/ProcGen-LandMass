@@ -70,12 +70,21 @@ public class DrawExistingHeightMap : MonoBehaviour
 			}
 		}
 		HeightMap[,] heightMaps = ImportHeightMap.ConvertToChunks(existingHeightMap, heightMapSettings, meshSettings);
-		for (int y = 0, yCoord = 0; y < heightMaps.GetLength(1); y++, yCoord += (int)((meshSettings.numVerticesPerLine - 6) * meshSettings.meshScale))
+		PlaceChunks(heightMaps);
+	}
+
+	private void PlaceChunks(HeightMap[,] heightMaps)
+	{
+		float posIncrement = (meshSettings.numVerticesPerLine - 6) * meshSettings.meshScale;
+		// Chunks are placed on XZ plane (X = Unity's X, Y = Unity's Z)
+		float zCoord = posIncrement * 0.5f + 1.5f;
+		for (int y = 0; y < heightMaps.GetLength(1); y++, zCoord += posIncrement)
 		{
-			for (int x = 0, xCoord = 0; x < heightMaps.GetLength(0); x++, xCoord += (int)((meshSettings.numVerticesPerLine - 6) * meshSettings.meshScale))
+			float xCoord = posIncrement * 0.5f + 1.5f;
+			for (int x = 0; x < heightMaps.GetLength(0); x++, xCoord += posIncrement)
 			{
-				GameObject chunkObject = 
-					Instantiate(chunkPrefab, new Vector3(yCoord, 0, xCoord), Quaternion.Euler(0, -90, 0), transform);
+				GameObject chunkObject =
+					Instantiate(chunkPrefab, new Vector3(xCoord, 0, zCoord), Quaternion.identity, transform);
 				chunkObject.GetComponent<MeshFilter>().sharedMesh =
 					MeshGenerator.GenerateTerrainMesh(heightMaps[x, y].values, meshSettings, 0).CreateMesh();
 			}

@@ -38,8 +38,11 @@ public class TerrainChunk
 	private WaterSettings waterSettings;
 	private Transform viewer;
 
+	private bool useExistingHeightMaps;
+	private HeightMap[,] existingHeightMaps;
+
 	public TerrainChunk(Vector2 coord, HeightMapSettings heightMapSettings, MeshSettings meshSettings, WaterSettings waterSettings,
-						LODInfo[] detailLevels, int colliderLODIndex, Transform parent, Transform viewer, Material material)
+						LODInfo[] detailLevels, int colliderLODIndex, Transform parent, Transform viewer, Material material, HeightMap[,] existingHeightMaps = null)
 	{
 		this.coord = coord;
 		this.detailLevels = detailLevels;
@@ -48,6 +51,12 @@ public class TerrainChunk
 		this.meshSettings = meshSettings;
 		this.waterSettings = waterSettings;
 		this.viewer = viewer;
+
+		useExistingHeightMaps = heightMapSettings.useExistingHeightMap;
+		if (useExistingHeightMaps)
+		{
+			this.existingHeightMaps = existingHeightMaps;
+		}
 
 		sampleCenter = coord * meshSettings.meshWorldSize / meshSettings.meshScale;
 		Vector2 position = coord * meshSettings.meshWorldSize;
@@ -85,6 +94,19 @@ public class TerrainChunk
 
 	public void Load()
 	{
+		if (useExistingHeightMaps)
+		{
+			if (coord.x < existingHeightMaps.GetLength(0) && coord.x >= 0 &&
+				coord.y < existingHeightMaps.GetLength(1) && coord.y >= 0)
+			{
+				OnHeightMapReceived(existingHeightMaps[(int)coord.x, (int)coord.y]);
+			}
+			else
+			{
+				OnHeightMapReceived(
+					new HeightMap(new float[meshSettings.numVerticesPerLine, meshSettings.numVerticesPerLine], 0, 1));
+			}
+		}
 		ThreadedDataRequester.RequestData(() => HeightMapGenerator.GenerateHeightMap(
 			meshSettings.numVerticesPerLine, meshSettings.numVerticesPerLine,
 			heightMapSettings, sampleCenter), OnHeightMapReceived);
