@@ -23,6 +23,9 @@ public class TerrainGenerator : MonoBehaviour
 	[HideInInspector]
 	public bool readyForPlayer;
 
+	[HideInInspector]
+	public float mapCenter;
+
 	private Vector3 viewerPosition;
 	private Vector3 viewerPositionOld;
 	private float meshWorldSize;
@@ -35,6 +38,8 @@ public class TerrainGenerator : MonoBehaviour
 
 	private bool useExistingHeightMap;
 	private HeightMap[,] existingHeightMaps;
+
+	public event Action mapLoaded;
 
 	private void Start()
 	{
@@ -51,11 +56,18 @@ public class TerrainGenerator : MonoBehaviour
 		float maxViewDst = detailLevels[detailLevels.Length - 1].visibleDstThreshold;
 		meshWorldSize = meshSettings.meshWorldSize;
 		chunksVisibleInViewDst = Mathf.RoundToInt(maxViewDst / meshWorldSize);
+
+		if (useExistingHeightMap)
+		{
+			mapCenter = heightMapSettings.heightMapImage.height * existingHeightMaps.GetLength(0) / 2;
+		}
 		
 		UpdateVisibleChunks();
 		readyForPlayer = true;
 	}
 
+	
+	
 	private void Update()
 	{
 		viewerPosition = new Vector3(viewer.position.x, viewer.position.z, 0);
