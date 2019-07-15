@@ -49,7 +49,7 @@ public static class ImportHeightMap
 			0, 0, mapImage.width, mapImage.height, mapImage.GetPixels());
 
 		// Get pixel blocks corresponding to each chunk from resizedMapImage and convert them to 2d float arrays
-		int uniqueVertsPerChunk = numVertsPerLine - 6;
+		int uniqueVertsPerChunk = numVertsPerLine - 3;
 		for (int yChunk = 0, x = 0, y = 0; yChunk < numVerticalChunksNeeded; yChunk++, y += uniqueVertsPerChunk, x = 0)
 		{
 			for (int xChunk = 0; xChunk < numHorizontalChunksNeeded; xChunk++, x += uniqueVertsPerChunk)

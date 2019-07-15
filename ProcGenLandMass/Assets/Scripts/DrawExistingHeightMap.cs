@@ -75,7 +75,7 @@ public class DrawExistingHeightMap : MonoBehaviour
 
 	private void PlaceChunks(HeightMap[,] heightMaps)
 	{
-		float posIncrement = (meshSettings.numVerticesPerLine - 6) * meshSettings.meshScale;
+		float posIncrement = (meshSettings.numVerticesPerLine - 3) * meshSettings.meshScale;
 		// Chunks are placed on XZ plane (X = Unity's X, Y = Unity's Z)
 		float zCoord = posIncrement * 0.5f + 1.5f;
 		for (int y = 0; y < heightMaps.GetLength(1); y++, zCoord += posIncrement)
