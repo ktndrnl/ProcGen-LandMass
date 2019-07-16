@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Main.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
+    path: Assets/DF Visualizer/Scenes/Main.unity
+    guid: 554960b3c1c46f74cbf6c77a556ea224
+  - enabled: 1
     path: Assets/DF Visualizer/Scenes/Main Menu.unity
     guid: 39027bf6426877440a769b347c6e8edf
   - enabled: 1
