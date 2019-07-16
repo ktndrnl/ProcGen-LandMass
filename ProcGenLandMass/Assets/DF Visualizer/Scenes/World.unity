@@ -121,6 +121,93 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &613658643
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 613658645}
+  - component: {fileID: 613658644}
+  - component: {fileID: 613658646}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &613658644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 613658643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb2ad2fc34354292a6266a3dfcad7e0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  colliderLODIndex: 0
+  detailLevels:
+  - lod: 0
+    visibleDstThreshold: 400
+    waterVisible: 1
+  - lod: 1
+    visibleDstThreshold: 800
+    waterVisible: 1
+  - lod: 2
+    visibleDstThreshold: 1000
+    waterVisible: 1
+  - lod: 2
+    visibleDstThreshold: 1200
+    waterVisible: 0
+  - lod: 4
+    visibleDstThreshold: 2000
+    waterVisible: 0
+  meshSettings: {fileID: 11400000, guid: 667fc8e953e08934ea7668a8c214de1d, type: 2}
+  heightMapSettings: {fileID: 11400000, guid: 407132a3634c9b740a01bf4f4235e842, type: 2}
+  textureSettings: {fileID: 11400000, guid: f36161fa1a9bf1145b1d63dd921a11aa, type: 2}
+  waterSettings: {fileID: 11400000, guid: a86bb2b8d46a0f34e9c5ec81c0e46886, type: 2}
+  viewer: {fileID: 2023424156}
+  mapMaterial: {fileID: 2100000, guid: d960f2e444465f947b259f24c2e857d5, type: 2}
+  readyForPlayer: 0
+  mapCenter: 0
+--- !u!4 &613658645
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 613658643}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &613658646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 613658643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a16164afd2e4a7bb20006cf24f546da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &711958172 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5443364323109444917, guid: 4f24994ff5273f84da998052c8ebe2ad,
+    type: 3}
+  m_PrefabInstance: {fileID: 1007281269}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &828051352
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -208,6 +295,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Map Generator
       objectReference: {fileID: 0}
+    - target: {fileID: 5443364323109444922, guid: 4f24994ff5273f84da998052c8ebe2ad,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5443364323109444917, guid: 4f24994ff5273f84da998052c8ebe2ad,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -291,7 +383,7 @@ PrefabInstance:
         type: 3}
       propertyPath: viewer
       value: 
-      objectReference: {fileID: 1013289752}
+      objectReference: {fileID: 711958172}
     - target: {fileID: 5443364323109444918, guid: 4f24994ff5273f84da998052c8ebe2ad,
         type: 3}
       propertyPath: detailLevels.Array.data[0].visibleDstThreshold
@@ -508,6 +600,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4262d6c23d15e54f98b9fe9f0754803, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &2023424155
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2023424156}
+  m_Layer: 0
+  m_Name: Viewer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2023424156
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2023424155}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2088381405
 GameObject:
   m_ObjectHideFlags: 0

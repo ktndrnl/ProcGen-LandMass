@@ -79,6 +79,11 @@ public static class ImportHeightMap
 		return heightMaps;
 	}
 
+	// private static Color[] FlipAndRotateImage(Color[] colors, int numVertsPerLine)
+	// {
+	// 	
+	// }
+
 	private static float[,] ConvertColorsToHeightValues(Color[] colors, int width, int height,
 														HeightMapSettings settings)
 	{
