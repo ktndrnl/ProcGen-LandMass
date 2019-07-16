@@ -59,7 +59,7 @@ public class TerrainGenerator : MonoBehaviour
 
 		if (useExistingHeightMap)
 		{
-			mapCenter = heightMapSettings.heightMapImage.height * existingHeightMaps.GetLength(0) / 2;
+			mapCenter = (heightMapSettings.heightMapImage.height * existingHeightMaps.GetLength(0)) / 2;
 		}
 		
 		UpdateVisibleChunks();

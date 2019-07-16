@@ -1,8 +1,6 @@
 
 using System;
 using System.Linq;
-using System.Text;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public static class ImportHeightMap
