@@ -27,6 +27,8 @@ public class MapGenerator : MonoBehaviour
 	[HideInInspector]
 	public float mapCenter;
 
+	public event Action OnMapLoaded; 
+
 	private Vector3 viewerPosition;
 	private Vector3 viewerPositionOld;
 	private float meshWorldSize;
@@ -68,6 +70,7 @@ public class MapGenerator : MonoBehaviour
 				yield return null;
 			}
 		}
+		OnMapLoaded?.Invoke();
 	}
 	
 	private void Update()

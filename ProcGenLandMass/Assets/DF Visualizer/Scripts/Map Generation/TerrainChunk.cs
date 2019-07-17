@@ -59,7 +59,8 @@ public class TerrainChunk
 		}
 
 		sampleCenter = coord * meshSettings.meshWorldSize / meshSettings.meshScale;
-		Vector2 position = coord * meshSettings.meshWorldSize;
+		float positionOffset = meshSettings.meshWorldSize * 0.5f;
+		Vector2 position = coord * meshSettings.meshWorldSize + new Vector2(positionOffset, positionOffset);
 		bounds = new Bounds(position, Vector2.one * meshSettings.meshWorldSize);
 
 		meshObject = new GameObject("Terrain Chunk");

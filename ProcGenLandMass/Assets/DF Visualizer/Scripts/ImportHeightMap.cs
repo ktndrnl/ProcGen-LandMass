@@ -1,6 +1,9 @@
 
 using System;
 using System.Linq;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Jobs;
 using UnityEngine;
 
 public static class ImportHeightMap
@@ -23,7 +26,7 @@ public static class ImportHeightMap
 
 		HeightMap[,] heightMaps = new HeightMap[numHorizontalChunksNeeded, numVerticalChunksNeeded];
 		float[,][,] heightMapValues = new float[numHorizontalChunksNeeded, numVerticalChunksNeeded][,];
-
+		
 		// Get maximum and minimum height values;
 		Color[] mapImageColors = mapImage.GetPixels();
 		float maxHeightValue =
@@ -48,6 +51,38 @@ public static class ImportHeightMap
 
 		// Get pixel blocks corresponding to each chunk from resizedMapImage and convert them to 2d float arrays
 		int uniqueVertsPerChunk = numVertsPerLine - 3;
+		
+		/*NativeList<JobHandle> jobHandleList = new NativeList<JobHandle>(Allocator.Temp);
+
+		NativeArray<int> arrayIndex = new NativeArray<int>(numVertsPerLine * numVertsPerLine, Allocator.TempJob);
+		NativeArray<int> length = new NativeArray<int>(numVertsPerLine * numVertsPerLine, Allocator.TempJob);
+		NativeArray<ColorArrayStruct> colorArrayStructs = new NativeArray<ColorArrayStruct>(numHorizontalChunksNeeded * numVerticalChunksNeeded, Allocator.Temp);
+		
+		for (int yChunk = 0, x = 0, y = 0; yChunk < numVerticalChunksNeeded; yChunk++, y += uniqueVertsPerChunk, x = 0)
+		{
+			for (int xChunk = 0, chunkNum = 0; xChunk < numHorizontalChunksNeeded; xChunk++, x += uniqueVertsPerChunk, chunkNum++)
+			{
+				colorArrayStructs[chunkNum] = new ColorArrayStruct
+				{
+					colorArray = resizedMapImage.GetPixels(x, y, numVertsPerLine, numVertsPerLine)
+				};
+				// Mirror image
+				for (int i = 0, j = 0; i < numVertsPerLine * numVertsPerLine; i += numVertsPerLine, j++)
+				{
+					arrayIndex[j] = i;
+					length[j] = numVertsPerLine;
+				}
+			}
+		}*/
+
+		// ReverseColorArrayJob reverseColorArrayJob = new ReverseColorArrayJob()
+		// {
+		// 	arrayIndex = arrayIndex,
+		// 	colorArrayStructs = colorArrayStructs,
+		// 	length = length
+		// };
+		// reverseColorArrayJob.Schedule()
+		
 		for (int yChunk = 0, x = 0, y = 0; yChunk < numVerticalChunksNeeded; yChunk++, y += uniqueVertsPerChunk, x = 0)
 		{
 			for (int xChunk = 0; xChunk < numHorizontalChunksNeeded; xChunk++, x += uniqueVertsPerChunk)
@@ -78,11 +113,34 @@ public static class ImportHeightMap
 
 		return heightMaps;
 	}
+	
+	/*public struct ColorArrayStruct
+	{
+		public Color[] colorArray;
+	}
 
-	// private static Color[] FlipAndRotateImage(Color[] colors, int numVertsPerLine)
-	// {
-	// 	
-	// }
+	[BurstCompile]
+	private struct ReverseColorArrayJob : IJobParallelFor
+	{
+		public NativeArray<ColorArrayStruct> colorArrayStructs;
+		public NativeArray<int> arrayIndex;
+		public NativeArray<int> length;
+
+		public void Execute(int index)
+		{
+			int i = arrayIndex[index];
+			int j = arrayIndex[index] + length[index] - 1;
+			Color[] colorArray = colorArrayStructs[index].colorArray;
+			while (i < j)
+			{
+				Color temp = colorArray[i];
+				colorArray[i] = colorArray[j];
+				colorArray[j] = temp;
+				i++;
+				j--;
+			}
+		}
+	}*/
 
 	private static float[,] ConvertColorsToHeightValues(Color[] colors, int width, int height,
 														HeightMapSettings settings)

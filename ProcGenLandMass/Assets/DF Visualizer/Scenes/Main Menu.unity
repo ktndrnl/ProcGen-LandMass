@@ -2865,6 +2865,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cb1fbaf84b8ee940b44c42f2ee4c674, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainMenuAnimator: {fileID: 1021946375}
+  slideInWaitTime: 0.2
 --- !u!4 &1901977488
 Transform:
   m_ObjectHideFlags: 0
@@ -3105,7 +3107,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 2006398928}
   m_OnClick:
     m_PersistentCalls:
@@ -3186,7 +3188,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -500, y: 0}
   m_SizeDelta: {x: 500, y: 1080}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2040928674
