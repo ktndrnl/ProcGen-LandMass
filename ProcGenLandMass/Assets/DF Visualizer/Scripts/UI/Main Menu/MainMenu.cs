@@ -3,20 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MainMenu : MonoBehaviour
+public class MainMenu : Menu
 {
-	public Animator mainMenuAnimator;
-	public float slideInWaitTime = 3f;
+	public event Action OnStartButton;
 
-	private void Start()
+	public void OnStartButtonPressed()
 	{
-		StartCoroutine(SlideIn());
-	}
-
-	private IEnumerator SlideIn()
-	{
-		yield return new WaitForSeconds(slideInWaitTime);
-		mainMenuAnimator.SetTrigger("SlideIn");
+		OnStartButton?.Invoke();
 	}
 
 	public void QuitGame()
