@@ -1,4 +1,7 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -100,7 +103,7 @@ public class TerrainChunk
 			if (coord.x < existingHeightMaps.GetLength(0) && coord.x >= 0 &&
 				coord.y < existingHeightMaps.GetLength(1) && coord.y >= 0)
 			{
-				OnHeightMapReceived(existingHeightMaps[(int)coord.x, (int)coord.y]);
+				DeliverHeightMapNextFrame(coord, existingHeightMaps);
 			}
 			else
 			{
@@ -114,6 +117,12 @@ public class TerrainChunk
 				meshSettings.numVerticesPerLine, meshSettings.numVerticesPerLine,
 				heightMapSettings, sampleCenter), OnHeightMapReceived);
 		}
+	}
+
+	private async void DeliverHeightMapNextFrame(Vector2 coords, HeightMap[,] heightMaps)
+	{
+		await Task.Delay(1);
+		OnHeightMapReceived(existingHeightMaps[(int)coord.x, (int)coord.y]);
 	}
 
 	private void OnHeightMapReceived(object heightMapObject)
