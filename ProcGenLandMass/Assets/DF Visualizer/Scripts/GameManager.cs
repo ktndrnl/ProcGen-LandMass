@@ -55,6 +55,12 @@ public class GameManager : MonoBehaviour
 			OnGameStateChange?.Invoke(isPaused ? UIState.World : UIState.PauseMenu);
 			isPaused = !isPaused;
 		}
+
+		if (!Application.isFocused && UIManager.instance.uiState == UIState.World)
+		{
+			OnGameStateChange?.Invoke(UIState.PauseMenu);
+			isPaused = true;
+		}
 	}
 
 	private void OnScenesLoaded()

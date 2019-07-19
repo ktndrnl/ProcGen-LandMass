@@ -23,7 +23,7 @@ MonoBehaviour:
     offset: {x: 0, y: 0}
   useFalloff: 0
   useExistingHeightMap: 1
-  heightMapImage: {fileID: 2800000, guid: 909440f93c56a244b97a8f504122c7fa, type: 3}
+  heightMapImage: {fileID: 2800000, guid: b36431ffb488c4b43babf486f24973ad, type: 3}
   heightMultiplier: 150
   heightCurve:
     serializedVersion: 2
