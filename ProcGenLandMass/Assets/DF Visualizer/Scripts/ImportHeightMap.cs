@@ -1,5 +1,6 @@
 
 using System;
+using System.IO;
 using System.Linq;
 using Unity.Burst;
 using Unity.Collections;
@@ -26,15 +27,63 @@ public static class ImportHeightMap
 
 		HeightMap[,] heightMaps = new HeightMap[numHorizontalChunksNeeded, numVerticalChunksNeeded];
 		float[,][,] heightMapValues = new float[numHorizontalChunksNeeded, numVerticalChunksNeeded][,];
+		float maxHeightValue = float.MinValue;
+		float minHeightValue = float.MaxValue;
+
+		/*int numJobs = mapImage.height;
+		NativeArray<Color32> rawMapImage = mapImage.GetRawTextureData<Color32>();
+		NativeArray<Color32> rawImageDataOutput = new NativeArray<Color32>(rawMapImage.Length, Allocator.TempJob);
+		NativeArray<int> indexArray = new NativeArray<int>(numJobs, Allocator.TempJob);
+		NativeArray<int> lengthArray = new NativeArray<int>(numJobs, Allocator.TempJob);
+
+		for (int jobIndex = 0, arrayIndex = 0; jobIndex < numJobs; jobIndex++, arrayIndex += mapImage.width)
+		{
+			indexArray[jobIndex] = arrayIndex;
+			lengthArray[jobIndex] = mapImage.width;
+		}
 		
-		// Get maximum and minimum height values;
-		Color[] mapImageColors = mapImage.GetPixels();
-		float maxHeightValue =
-			ConvertColorsToHeightValues(
-				mapImageColors, mapImage.width, mapImage.height, heightMapSettings).Cast<float>().Max();
-		float minHeightValue =
-			ConvertColorsToHeightValues(
-				mapImageColors, mapImage.width, mapImage.height, heightMapSettings).Cast<float>().Min();
+		FlipImageJob flipImageJob = new FlipImageJob
+		{
+			rawImageDataInput = rawMapImage,
+			rawImageDataOutput = rawImageDataOutput,
+			indexArray = indexArray,
+			lengthArray = lengthArray
+		};
+
+		JobHandle flipImageJobHandle;
+
+		try
+		{
+			flipImageJobHandle = flipImageJob.Schedule(mapImage.height, mapImage.width);
+			flipImageJobHandle.Complete();
+		}
+		catch (Exception e)
+		{
+			indexArray.Dispose();
+			lengthArray.Dispose();
+			rawImageDataOutput.Dispose();
+			Console.WriteLine(e);
+			throw;
+		}
+		
+		Color32[] jobResult = flipImageJob.rawImageDataOutput.ToArray();
+		Color[] jobResultColors = new Color[mapImage.height * mapImage.width];
+
+		for (int i = 0; i < jobResultColors.Length; i++)
+		{
+			jobResultColors[i] = jobResult[i];
+		}
+		
+		Texture2D tex = new Texture2D(mapImage.width, mapImage.height);
+		tex.SetPixels(jobResultColors);
+		tex.Apply();
+		
+		byte[] bytes = tex.EncodeToPNG();
+		File.WriteAllBytes(Application.dataPath + "/../SavedHeightMap.png", bytes);
+		
+		indexArray.Dispose();
+		lengthArray.Dispose();
+		rawImageDataOutput.Dispose();*/
 
 		// Resize mapImage so it will be centered in the chunks it needs
 		int newWidth = numHorizontalChunksNeeded * numVertsPerLine;
@@ -44,46 +93,30 @@ public static class ImportHeightMap
 		blackFill.Populate(Color.black);
 		resizedMapImage.SetPixels(blackFill);
 
-		int horizontalPadding = (newWidth - mapImage.width) / 2;
-		int verticalPadding = (newHeight - mapImage.height) / 2;
-		resizedMapImage.SetPixels(
-			0, 0, mapImage.width, mapImage.height, mapImage.GetPixels());
+		// int horizontalPadding = (newWidth - mapImage.width) / 2;
+		// int verticalPadding = (newHeight - mapImage.height) / 2;
+		
+		resizedMapImage.SetPixels(0, 0, mapImage.width, mapImage.height, mapImage.GetPixels());
+
+		// resizedMapImage.SetPixels(
+		// 	0, 0, mapImage.width, mapImage.height, mapImage.GetPixels());
 
 		// Get pixel blocks corresponding to each chunk from resizedMapImage and convert them to 2d float arrays
 		int uniqueVertsPerChunk = numVertsPerLine - 3;
-		
-		/*NativeList<JobHandle> jobHandleList = new NativeList<JobHandle>(Allocator.Temp);
 
-		NativeArray<int> arrayIndex = new NativeArray<int>(numVertsPerLine * numVertsPerLine, Allocator.TempJob);
-		NativeArray<int> length = new NativeArray<int>(numVertsPerLine * numVertsPerLine, Allocator.TempJob);
-		NativeArray<ColorArrayStruct> colorArrayStructs = new NativeArray<ColorArrayStruct>(numHorizontalChunksNeeded * numVerticalChunksNeeded, Allocator.Temp);
-		
 		for (int yChunk = 0, x = 0, y = 0; yChunk < numVerticalChunksNeeded; yChunk++, y += uniqueVertsPerChunk, x = 0)
 		{
-			for (int xChunk = 0, chunkNum = 0; xChunk < numHorizontalChunksNeeded; xChunk++, x += uniqueVertsPerChunk, chunkNum++)
+			for (int xChunk = 0; xChunk < numHorizontalChunksNeeded; xChunk++, x += uniqueVertsPerChunk)
 			{
-				colorArrayStructs[chunkNum] = new ColorArrayStruct
-				{
-					colorArray = resizedMapImage.GetPixels(x, y, numVertsPerLine, numVertsPerLine)
-				};
-				// Mirror image
-				for (int i = 0, j = 0; i < numVertsPerLine * numVertsPerLine; i += numVertsPerLine, j++)
-				{
-					arrayIndex[j] = i;
-					length[j] = numVertsPerLine;
-				}
+				Color[] colors = resizedMapImage.GetPixels(x, y, numVertsPerLine, numVertsPerLine);
+				heightMapValues[xChunk, yChunk] = ConvertColorsToHeightValues(
+					colors, numVertsPerLine, numVertsPerLine, heightMapSettings, ref maxHeightValue,
+					ref minHeightValue);
 			}
-		}*/
+		}
 
-		// ReverseColorArrayJob reverseColorArrayJob = new ReverseColorArrayJob()
-		// {
-		// 	arrayIndex = arrayIndex,
-		// 	colorArrayStructs = colorArrayStructs,
-		// 	length = length
-		// };
-		// reverseColorArrayJob.Schedule()
-		
-		for (int yChunk = 0, x = 0, y = 0; yChunk < numVerticalChunksNeeded; yChunk++, y += uniqueVertsPerChunk, x = 0)
+		// Normal one
+		/*for (int yChunk = 0, x = 0, y = 0; yChunk < numVerticalChunksNeeded; yChunk++, y += uniqueVertsPerChunk, x = 0)
 		{
 			for (int xChunk = 0; xChunk < numHorizontalChunksNeeded; xChunk++, x += uniqueVertsPerChunk)
 			{
@@ -97,9 +130,9 @@ public static class ImportHeightMap
 				Array.Reverse(colors, 0, colors.Length);
 				
 				heightMapValues[xChunk, yChunk] = ConvertColorsToHeightValues(
-					colors, numVertsPerLine, numVertsPerLine, heightMapSettings);
+					colors, numVertsPerLine, numVertsPerLine, heightMapSettings, ref maxHeightValue, ref minHeightValue);
 			}
-		}
+		}*/
 
 		// Convert heightMapValues to HeightMaps
 		for (int y = 0; y < numVerticalChunksNeeded; y++)
@@ -114,36 +147,35 @@ public static class ImportHeightMap
 		return heightMaps;
 	}
 	
-	/*public struct ColorArrayStruct
+	[BurstCompile]
+	private struct FlipImageJob : IJobParallelFor
 	{
-		public Color[] colorArray;
+		[NativeDisableParallelForRestriction]
+		[ReadOnly]
+		public NativeArray<Color32> rawImageDataInput;
+		[NativeDisableParallelForRestriction]
+		[WriteOnly]
+		public NativeArray<Color32> rawImageDataOutput;
+		public NativeArray<int> indexArray;
+		public NativeArray<int> lengthArray;
+		
+		public void Execute(int index)
+        {
+        	int i = indexArray[index];
+        	int j = indexArray[index] + lengthArray[index] - 1;
+        	while (i < j)
+        	{
+        		Color32 temp = rawImageDataInput[i];
+				rawImageDataOutput[i] = rawImageDataInput[j];
+        		rawImageDataOutput[j] = temp;
+        		i++;
+        		j--;
+        	}
+        }
 	}
 
-	[BurstCompile]
-	private struct ReverseColorArrayJob : IJobParallelFor
-	{
-		public NativeArray<ColorArrayStruct> colorArrayStructs;
-		public NativeArray<int> arrayIndex;
-		public NativeArray<int> length;
-
-		public void Execute(int index)
-		{
-			int i = arrayIndex[index];
-			int j = arrayIndex[index] + length[index] - 1;
-			Color[] colorArray = colorArrayStructs[index].colorArray;
-			while (i < j)
-			{
-				Color temp = colorArray[i];
-				colorArray[i] = colorArray[j];
-				colorArray[j] = temp;
-				i++;
-				j--;
-			}
-		}
-	}*/
-
 	private static float[,] ConvertColorsToHeightValues(Color[] colors, int width, int height,
-														HeightMapSettings settings)
+														HeightMapSettings settings, ref float maxHeightValue, ref float minHeightValue)
 	{
 		float[,] heightMapValues = new float[width, height];
 		AnimationCurve heightCurve = new AnimationCurve(settings.heightCurve.keys);
@@ -153,6 +185,16 @@ public static class ImportHeightMap
 			{
 				float colorValue = colors[i].grayscale;
 				colorValue *= heightCurve.Evaluate(colorValue) * settings.heightMultiplier;
+				
+				if (colorValue > maxHeightValue)
+				{
+					maxHeightValue = colorValue;
+				}
+				if (colorValue < minHeightValue)
+				{
+					minHeightValue = colorValue;
+				}
+				
 				heightMapValues[x, y] = colorValue;
 			}
 		}

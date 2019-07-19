@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -53,10 +54,10 @@ public class MapGenerator : MonoBehaviour
 
 		existingHeightMaps =
 			ImportHeightMap.ConvertToChunks(heightMapSettings.heightMapImage, heightMapSettings, meshSettings);
-		StartCoroutine(LoadChunks());
+		LoadChunks();
 	}
 
-	private IEnumerator LoadChunks()
+	private async void LoadChunks()
 	{
 		for (int y = 0; y < existingHeightMaps.GetLength(1); y++)
 		{
@@ -67,7 +68,7 @@ public class MapGenerator : MonoBehaviour
 				newChunk.Load();
 				terrainChunkDictionary.Add(new Vector2(x, y), newChunk);
 				newChunk.onVisibilityChanged += OnTerrainChunkVisibilityChanged;
-				yield return null;
+				await Task.Delay(1);
 			}
 		}
 		OnMapLoaded?.Invoke();

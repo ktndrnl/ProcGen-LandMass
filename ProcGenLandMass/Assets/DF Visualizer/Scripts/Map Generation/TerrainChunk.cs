@@ -75,7 +75,15 @@ public class TerrainChunk
 		meshObject.transform.position = new Vector3(position.x, 0, position.y);
 		meshObject.transform.parent = parent;
 		
-		waterObject = GameObject.Instantiate(waterSettings.waterPlanePrefab, meshObject.transform);
+		if (useExistingHeightMaps)
+		{
+			Quaternion rot = Quaternion.Euler(new Vector3(0, 180, 0));
+			Vector3 scale = new Vector3(-1, 1, 1);
+			meshObject.transform.rotation = rot;
+			meshObject.transform.localScale = scale;
+		}
+		
+		waterObject = GameObject.Instantiate(waterSettings.waterPlanePrefab, meshObject.transform, true);
 		//TODO: way to set water height based on terrain texture settings | 1.78f
 		waterObject.transform.localPosition = new Vector3(0, waterSettings.waterHeight , 0);
 		waterObject.transform.localScale *= waterSettings.waterPlaneScaleMultiplier;
