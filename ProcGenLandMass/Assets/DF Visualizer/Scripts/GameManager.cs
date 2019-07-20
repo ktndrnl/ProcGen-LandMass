@@ -29,7 +29,8 @@ public class GameManager : MonoBehaviour
 
 	public int worldSceneBuildIndex = 1;
 
-	public event Action<UIState> OnGameStateChange; 
+	public event Action<UIState> OnGameStateChange;
+	public event Action OnStartGame;
 
 	[HideInInspector]
 	public MainMenu mainMenu;
@@ -95,6 +96,7 @@ public class GameManager : MonoBehaviour
 	private void StartGame()
 	{
 		OnGameStateChange?.Invoke(UIState.World);
+		OnStartGame?.Invoke();
 		SwitchCameras();
 	}
 	

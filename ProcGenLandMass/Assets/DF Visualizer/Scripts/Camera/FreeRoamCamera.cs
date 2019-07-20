@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class FreeRoamCamera : MonoBehaviour
 {
+	public Vector3 startingPosition;
+	public Vector3 startingRotation;
+	
 	public float initialSpeed = 10f;
     public float increaseSpeed = 1.25f;
 
@@ -43,8 +46,15 @@ public class FreeRoamCamera : MonoBehaviour
 	{
 		rb = GetComponent<Rigidbody>();
 		GameManager.instance.OnGameStateChange += OnGameStateChanged;
+		GameManager.instance.OnStartGame += ResetCameraPosition;
 
 		boostMaxSpeed = maxSpeed * speedBoostMultiplier;
+	}
+
+	private void ResetCameraPosition()
+	{
+		transform.position = startingPosition;
+		transform.rotation = Quaternion.Euler(startingRotation);
 	}
 
 	private void FixedUpdate()

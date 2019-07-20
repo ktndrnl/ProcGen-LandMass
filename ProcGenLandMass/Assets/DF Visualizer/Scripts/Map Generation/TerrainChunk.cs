@@ -54,6 +54,7 @@ public class TerrainChunk
 		this.meshSettings = meshSettings;
 		this.waterSettings = waterSettings;
 		this.viewer = viewer;
+		MapGenerator.OnViewerChanged += OnViewerChanged;
 
 		useExistingHeightMaps = heightMapSettings.useExistingHeightMap;
 		if (useExistingHeightMaps)
@@ -215,6 +216,12 @@ public class TerrainChunk
 				}
 			}
 		}
+	}
+
+	private async void OnViewerChanged(Transform transform)
+	{
+		await Task.Delay(TimeSpan.FromSeconds(1));
+		viewer = transform;
 	}
 
 	public void SetVisible(bool visible)

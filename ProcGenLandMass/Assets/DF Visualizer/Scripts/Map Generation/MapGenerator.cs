@@ -28,8 +28,8 @@ public class MapGenerator : MonoBehaviour
 	[HideInInspector]
 	public float mapCenter;
 
-	public event Action OnMapLoaded; 
-
+	public static event Action<Transform> OnViewerChanged; 
+	
 	private Vector3 viewerPosition;
 	private Vector3 viewerPositionOld;
 	private float meshWorldSize;
@@ -43,6 +43,8 @@ public class MapGenerator : MonoBehaviour
 	private bool useExistingHeightMap;
 	private HeightMap[,] existingHeightMaps;
 
+	private bool chunksNeedUpdating;
+
 	private void Start()
 	{
 		textureSettings.ApplyToMaterial(mapMaterial);
@@ -55,9 +57,30 @@ public class MapGenerator : MonoBehaviour
 		if (GameManager.instance != null)
 		{
 			GameManager.instance.mapGenerator = this;
+			GameManager.instance.OnGameStateChange += OnGameStateChanged;
 		}
 
 		LoadNewMapFromImage(heightMapSettings.heightMapImage);
+	}
+
+	private void ChangeViewer(Transform transform)
+	{
+		viewer = transform;
+		chunksNeedUpdating = true;
+		OnViewerChanged?.Invoke(transform);
+	}
+
+	private void OnGameStateChanged(UIState state)
+	{
+		switch (state)
+		{
+			case UIState.World:
+				ChangeViewer(GameManager.instance.worldCamera.transform);
+				break;
+			case UIState.MainMenu:
+				ChangeViewer(GameManager.instance.previewCamera.transform);
+				break;
+		}
 	}
 
 	public void LoadNewMapFromImage(Texture2D image)
@@ -93,7 +116,6 @@ public class MapGenerator : MonoBehaviour
 				await Task.Delay(1);
 			}
 		}
-		OnMapLoaded?.Invoke();
 	}
 
 	private void Update()
@@ -142,7 +164,7 @@ public class MapGenerator : MonoBehaviour
 			{
 				Vector2 viewedChunkCoord = new Vector2(currentChunkCoordX + xOffset, currentChunkCoordY + yOffset);
 
-				if (!alreadyUpdatedChunkCoords.Contains(viewedChunkCoord))
+				if (!alreadyUpdatedChunkCoords.Contains(viewedChunkCoord) || chunksNeedUpdating)
 				{
 					if (terrainChunkDictionary.ContainsKey(viewedChunkCoord))
 					{
@@ -151,6 +173,8 @@ public class MapGenerator : MonoBehaviour
 				}
 			}
 		}
+
+		chunksNeedUpdating = false;
 	}
 	
 	private void OnTerrainChunkVisibilityChanged(TerrainChunk chunk, bool isVisible)
