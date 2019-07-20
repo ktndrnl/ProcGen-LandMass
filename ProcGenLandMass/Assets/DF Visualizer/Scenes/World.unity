@@ -351,7 +351,7 @@ MonoBehaviour:
     waterVisible: 1
   meshSettings: {fileID: 11400000, guid: 667fc8e953e08934ea7668a8c214de1d, type: 2}
   heightMapSettings: {fileID: 11400000, guid: 407132a3634c9b740a01bf4f4235e842, type: 2}
-  textureSettings: {fileID: 11400000, guid: f36161fa1a9bf1145b1d63dd921a11aa, type: 2}
+  textureSettings: {fileID: 11400000, guid: adbc7d7c057651c4b8903ec7b16930d8, type: 2}
   waterSettings: {fileID: 11400000, guid: a86bb2b8d46a0f34e9c5ec81c0e46886, type: 2}
   viewer: {fileID: 1283176836}
   mapMaterial: {fileID: 2100000, guid: d960f2e444465f947b259f24c2e857d5, type: 2}

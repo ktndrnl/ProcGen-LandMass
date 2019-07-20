@@ -67,12 +67,21 @@ public class UIManager : MonoBehaviour
 			case UIState.World:
 				DisableMenu(mainMenu, mainMenuAnimator);
 				DisableMenu(pauseMenu, pauseMenuAnimator);
+				DisableMenu(importMenu.gameObject);
 				break;
 		}
 		
 		uiState = state;
 	}
 
+	private void EnableMenu(GameObject menuObject)
+	{
+		if (!menuObject.gameObject.activeSelf)
+		{
+			menuObject.gameObject.SetActive(true);
+		}
+	}
+	
 	private void EnableMenu(Menu menu, Animator animator)
 	{
 		if (!menu.gameObject.activeSelf)
@@ -82,6 +91,14 @@ public class UIManager : MonoBehaviour
 		}
 	}
 
+	private void DisableMenu(GameObject menuObject)
+	{
+		if (menuObject.gameObject.activeSelf)
+		{
+			menuObject.gameObject.SetActive(false);
+		}
+	}
+	
 	private void DisableMenu(Menu menu, Animator animator)
 	{
 		if (menu.gameObject.activeSelf)
@@ -97,9 +114,9 @@ public class UIManager : MonoBehaviour
 		menu.gameObject.SetActive(false);
 	}
 
-	public void ToggleImportMenu()
+	public void ToggleMenu(GameObject menuObject)
 	{
-		importMenu.gameObject.SetActive(!importMenu.gameObject.activeSelf);
+		menuObject.SetActive(!menuObject.activeSelf);
 	}
 }
 
