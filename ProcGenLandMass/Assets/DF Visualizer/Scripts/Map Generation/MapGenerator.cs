@@ -52,11 +52,30 @@ public class MapGenerator : MonoBehaviour
 		meshWorldSize = meshSettings.meshWorldSize;
 		chunksVisibleInViewDst = Mathf.RoundToInt(maxViewDst / meshWorldSize);
 
-		existingHeightMaps =
-			ImportHeightMap.ConvertToChunks(heightMapSettings.heightMapImage, heightMapSettings, meshSettings);
-		LoadChunks();
+		GameManager.instance.mapGenerator = this;
+
+		LoadNewMapFromImage(heightMapSettings.heightMapImage);
 	}
 
+	public void LoadNewMapFromImage(Texture2D image)
+	{
+		if (transform.childCount > 0)
+		{
+			foreach (Transform childTransform in transform.GetComponentsInChildren(typeof(Transform), true))
+			{
+				if (childTransform.gameObject != this.gameObject)
+				{
+					Destroy(childTransform.gameObject);
+				}
+			}
+			terrainChunkDictionary.Clear();
+			visibleTerrainChunks.Clear();
+			visibleTerrainChunksToRemove.Clear();
+		}
+		existingHeightMaps = ImportHeightMap.ConvertToChunks(image, heightMapSettings, meshSettings);
+		LoadChunks();
+	}
+	
 	private async void LoadChunks()
 	{
 		for (int y = 0; y < existingHeightMaps.GetLength(1); y++)
@@ -73,7 +92,7 @@ public class MapGenerator : MonoBehaviour
 		}
 		OnMapLoaded?.Invoke();
 	}
-	
+
 	private void Update()
 	{
 		viewerPosition = new Vector3(viewer.position.x, viewer.position.z, 0);

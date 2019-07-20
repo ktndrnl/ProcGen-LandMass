@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 
 public class GameManager : MonoBehaviour
@@ -37,13 +39,34 @@ public class GameManager : MonoBehaviour
 
 	[HideInInspector]
 	public GameObject worldCamera;
+
+	[HideInInspector]
+	public List<Texture2D> importedImages;
+
+	[HideInInspector]
+	public MapGenerator mapGenerator;
 	
 	private void Start()
 	{
+		ImportImages();
 		SceneLoader.instance.LoadStartingScenes();
 		SceneLoader.instance.OnLoadComplete += OnScenesLoaded;
 		mainMenu = UIManager.instance.mainMenu;
 		mainMenu.OnStartButton += StartGame;
+	}
+
+	private void ImportImages()
+	{
+		importedImages = ImageImporter.GetImportedImages();
+		foreach (Texture2D image in importedImages)
+		{
+			UIManager.instance.importMenu.CreateFileButton(image);
+		}
+	}
+
+	public void SendImageToMapGenerator(Texture2D tex)
+	{
+		mapGenerator.LoadNewMapFromImage(tex);
 	}
 
 	// TODO: Replace. Just for testing.

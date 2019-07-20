@@ -36,6 +36,10 @@ public class UIManager : MonoBehaviour
 	public PauseMenu pauseMenu;
 	[SerializeField]
 	private Animator pauseMenuAnimator;
+	
+	// Import Menu
+	[Header("Import Menu")]
+	public ImportMenu importMenu;
 
 	[HideInInspector]
 	public UIState uiState;
@@ -91,6 +95,11 @@ public class UIManager : MonoBehaviour
 	{
 		menu.SlideOutComplete -= OnMenuSlideOutComplete;
 		menu.gameObject.SetActive(false);
+	}
+
+	public void ToggleImportMenu()
+	{
+		importMenu.gameObject.SetActive(!importMenu.gameObject.activeSelf);
 	}
 }
 
