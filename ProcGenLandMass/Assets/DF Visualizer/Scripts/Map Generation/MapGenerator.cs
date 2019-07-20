@@ -52,7 +52,10 @@ public class MapGenerator : MonoBehaviour
 		meshWorldSize = meshSettings.meshWorldSize;
 		chunksVisibleInViewDst = Mathf.RoundToInt(maxViewDst / meshWorldSize);
 
-		GameManager.instance.mapGenerator = this;
+		if (GameManager.instance != null)
+		{
+			GameManager.instance.mapGenerator = this;
+		}
 
 		LoadNewMapFromImage(heightMapSettings.heightMapImage);
 	}
