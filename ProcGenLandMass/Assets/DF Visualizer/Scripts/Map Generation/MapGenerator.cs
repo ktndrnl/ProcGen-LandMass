@@ -100,6 +100,14 @@ public class MapGenerator : MonoBehaviour
 					Destroy(childTransform.gameObject);
 				}
 			}
+
+			foreach (KeyValuePair<Vector2,TerrainChunk> pair in terrainChunkDictionary)
+			{
+				pair.Value.onVisibilityChanged -= OnTerrainChunkVisibilityChanged;
+				pair.Value.onFoundHighestPoint -= OnHighestPointChanged.Invoke;
+				pair.Value.UnsubscribeFromEvents();
+			}
+			
 			terrainChunkDictionary.Clear();
 			visibleTerrainChunks.Clear();
 			visibleTerrainChunksToRemove.Clear();

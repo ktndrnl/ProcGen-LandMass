@@ -71,19 +71,18 @@ public class GameManager : MonoBehaviour
 	}
 
 	// TODO: Replace. Just for testing.
-	private bool isPaused;
+	[HideInInspector]
+	public bool isPaused;
 	private void Update()
 	{
 		if (Input.GetKeyDown(KeyCode.Escape) && UIManager.instance.uiState != UIState.MainMenu)
 		{
 			OnGameStateChange?.Invoke(isPaused ? UIState.World : UIState.PauseMenu);
-			isPaused = !isPaused;
 		}
 
 		if (!Application.isFocused && UIManager.instance.uiState == UIState.World)
 		{
 			OnGameStateChange?.Invoke(UIState.PauseMenu);
-			isPaused = true;
 		}
 	}
 

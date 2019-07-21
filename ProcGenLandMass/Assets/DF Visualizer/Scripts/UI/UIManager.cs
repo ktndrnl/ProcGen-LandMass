@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
@@ -43,6 +44,8 @@ public class UIManager : MonoBehaviour
 
 	[HideInInspector]
 	public UIState uiState;
+
+	public TextMeshProUGUI debugText;
 	
 	private static readonly int SlideIn = Animator.StringToHash("SlideIn");
 	private static readonly int SlideOut = Animator.StringToHash("SlideOut");
@@ -54,15 +57,18 @@ public class UIManager : MonoBehaviour
 
 	private void OnGameStateChanged(UIState state)
 	{
+		Debug.Log(uiState.ToString());
 		switch (state)
 		{
 			case UIState.MainMenu:
 				EnableMenu(mainMenu, mainMenuAnimator);
 				DisableMenu(pauseMenu, pauseMenuAnimator);
+				GameManager.instance.isPaused = false;
 				break;
 			case UIState.PauseMenu:
 				EnableMenu(pauseMenu, pauseMenuAnimator);
 				DisableMenu(mainMenu, mainMenuAnimator);
+				GameManager.instance.isPaused = true;
 				break;
 			case UIState.World:
 				DisableMenu(mainMenu, mainMenuAnimator);
@@ -72,6 +78,8 @@ public class UIManager : MonoBehaviour
 		}
 		
 		uiState = state;
+		Debug.Log(uiState.ToString());
+		debugText.text = uiState.ToString();
 	}
 
 	private void EnableMenu(GameObject menuObject)
@@ -112,6 +120,7 @@ public class UIManager : MonoBehaviour
 	{
 		menu.SlideOutComplete -= OnMenuSlideOutComplete;
 		menu.gameObject.SetActive(false);
+		GameManager.instance.isPaused = false;
 	}
 
 	public void ToggleMenu(GameObject menuObject)

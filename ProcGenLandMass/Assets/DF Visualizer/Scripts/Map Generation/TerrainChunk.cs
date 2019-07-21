@@ -111,6 +111,11 @@ public class TerrainChunk
 		maxViewDst = detailLevels[detailLevels.Length - 1].visibleDstThreshold;
 	}
 
+	public void UnsubscribeFromEvents()
+	{
+		MapGenerator.OnViewerChanged -= OnViewerChanged;
+	}
+
 	public void Load()
 	{
 		if (useExistingHeightMaps)
