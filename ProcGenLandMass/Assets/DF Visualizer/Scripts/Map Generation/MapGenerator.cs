@@ -109,7 +109,43 @@ public class MapGenerator : MonoBehaviour
 		existingHeightMaps = heightMapsData.heightMaps;
 		highestPointChunkPos = heightMapsData.highestPointChunkCoord * meshWorldSize;
 		OnHighestPointChanged?.Invoke(new Vector3(highestPointChunkPos.x, 180, highestPointChunkPos.y));
+		SetupMapBounds();
 		LoadChunks();
+	}
+
+	private void SetupMapBounds()
+	{
+		float mapWidth = heightMapsData.heightMaps.GetLength(0) * meshWorldSize;
+		float mapHeight = heightMapsData.heightMaps.GetLength(0) * meshWorldSize;
+		
+		float colHeight = 512f;
+		
+		GameObject colliders = new GameObject("Colliders");
+		colliders.transform.parent = transform;
+
+		CreateCollider("West", new Vector3(1, colHeight, mapHeight), 
+			new Vector3(-0.5f, colHeight * 0.5f, mapHeight * 0.5f));
+		
+		CreateCollider("East", new Vector3(1, colHeight, mapHeight),
+			new Vector3(mapWidth + 0.5f, colHeight * 0.5f, mapHeight * 0.5f));
+		
+		CreateCollider("North", new Vector3(mapWidth, colHeight, 1),
+			new Vector3(mapWidth * 0.5f, colHeight * 0.5f, mapHeight + 0.5f));
+		
+		CreateCollider("South", new Vector3(mapWidth, colHeight, 1),
+			new Vector3(mapWidth * 0.5f, colHeight * 0.5f, -0.5f));
+		
+		CreateCollider("Top", new Vector3(mapWidth, 1, mapHeight),
+			new Vector3(mapWidth * 0.5f, colHeight + 0.5f,  mapHeight * 0.5f));
+		
+		void CreateCollider(string name, Vector3 scale, Vector3 position)
+		{
+			GameObject col = new GameObject(name + "Collider");
+			col.AddComponent<BoxCollider>();
+			col.transform.parent = colliders.transform;
+			col.transform.localScale = scale;
+			col.transform.position = position;
+		}
 	}
 	
 	private void LoadChunks()
