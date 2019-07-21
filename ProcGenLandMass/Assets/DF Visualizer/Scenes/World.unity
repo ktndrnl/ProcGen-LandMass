@@ -254,7 +254,7 @@ MonoBehaviour:
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}
   m_Lens:
-    FieldOfView: 40
+    FieldOfView: 30
     OrthographicSize: 10
     NearClipPlane: 0.1
     FarClipPlane: 5000
@@ -300,7 +300,7 @@ MonoBehaviour:
   terrainGenerator: {fileID: 0}
   focalPoint: {x: 530, y: 90, z: 470}
   focalPointDistanceMultiplier: 0.5
-  cameraHeight: 180
+  cameraHeight: 60
   rotationSpeed: 5
 --- !u!1 &613658643
 GameObject:
@@ -350,7 +350,7 @@ MonoBehaviour:
     visibleDstThreshold: 4000
     waterVisible: 1
   meshSettings: {fileID: 11400000, guid: 667fc8e953e08934ea7668a8c214de1d, type: 2}
-  heightMapSettings: {fileID: 11400000, guid: 407132a3634c9b740a01bf4f4235e842, type: 2}
+  heightMapSettings: {fileID: 11400000, guid: 2675b7a3c71d1754fb42e04dd4f7f037, type: 2}
   textureSettings: {fileID: 11400000, guid: adbc7d7c057651c4b8903ec7b16930d8, type: 2}
   waterSettings: {fileID: 11400000, guid: a86bb2b8d46a0f34e9c5ec81c0e46886, type: 2}
   viewer: {fileID: 1283176836}
@@ -678,7 +678,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 5000
-  field of view: 40
+  field of view: 30
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -887,6 +887,7 @@ GameObject:
   - component: {fileID: 1314490300}
   - component: {fileID: 1314490299}
   - component: {fileID: 1314490298}
+  - component: {fileID: 1314490301}
   m_Layer: 0
   m_Name: cm
   m_TagString: Untagged
@@ -969,6 +970,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac0b09e7857660247b1477e93731de29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1314490301
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1314490296}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68bb026fafb42b14791938953eaace77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_NoiseProfile: {fileID: 11400000, guid: a3dacaec0287d7444b4bd276816e1666, type: 2}
+  m_AmplitudeGain: 0.5
+  m_FrequencyGain: 0.5
+  mNoiseOffsets: {x: 0, y: 0, z: 0}
 --- !u!1 &2023424155
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,7 +11,7 @@ public static class ImportHeightMap
 {
 	private static float[,] heightMapArray;
 
-	public static HeightMap[,] ConvertToChunks(Texture2D mapImage, HeightMapSettings heightMapSettings,
+	public static HeightMapsData ConvertToChunks(Texture2D mapImage, HeightMapSettings heightMapSettings,
 											   MeshSettings meshSettings)
 	{
 		// Chunks should share same end point (not included extra vertex used for normals) ex: c1v-c1v-c1v&c2n-c1v&c2v-c2v&c1n-c2v-c2v-...
@@ -104,6 +104,8 @@ public static class ImportHeightMap
 		// Get pixel blocks corresponding to each chunk from resizedMapImage and convert them to 2d float arrays
 		int uniqueVertsPerChunk = numVertsPerLine - 3;
 
+		Vector2 highestPointChunkCoord = new Vector2();
+
 		for (int yChunk = 0, x = 0, y = 0; yChunk < numVerticalChunksNeeded; yChunk++, y += uniqueVertsPerChunk, x = 0)
 		{
 			for (int xChunk = 0; xChunk < numHorizontalChunksNeeded; xChunk++, x += uniqueVertsPerChunk)
@@ -111,7 +113,7 @@ public static class ImportHeightMap
 				Color[] colors = resizedMapImage.GetPixels(x, y, numVertsPerLine, numVertsPerLine);
 				heightMapValues[xChunk, yChunk] = ConvertColorsToHeightValues(
 					colors, numVertsPerLine, numVertsPerLine, heightMapSettings, ref maxHeightValue,
-					ref minHeightValue);
+					ref minHeightValue, new Vector2(xChunk, yChunk), ref highestPointChunkCoord);
 			}
 		}
 
@@ -144,7 +146,18 @@ public static class ImportHeightMap
 			}
 		}
 
-		return heightMaps;
+		HeightMapsData heightMapsData = new HeightMapsData
+		{
+			heightMaps = heightMaps,
+			highestPointChunkCoord = highestPointChunkCoord
+		};
+		return heightMapsData;
+	}
+	
+	public struct HeightMapsData
+	{
+		public HeightMap[,] heightMaps;
+		public Vector2 highestPointChunkCoord;
 	}
 	
 	[BurstCompile]
@@ -175,7 +188,8 @@ public static class ImportHeightMap
 	}
 
 	private static float[,] ConvertColorsToHeightValues(Color[] colors, int width, int height,
-														HeightMapSettings settings, ref float maxHeightValue, ref float minHeightValue)
+														HeightMapSettings settings, ref float maxHeightValue, 
+														ref float minHeightValue, Vector2 chunkCoord, ref Vector2 highestPointChunkCoord)
 	{
 		float[,] heightMapValues = new float[width, height];
 		AnimationCurve heightCurve = new AnimationCurve(settings.heightCurve.keys);
@@ -189,6 +203,7 @@ public static class ImportHeightMap
 				if (colorValue > maxHeightValue)
 				{
 					maxHeightValue = colorValue;
+					highestPointChunkCoord = chunkCoord;
 				}
 				if (colorValue < minHeightValue)
 				{

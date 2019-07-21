@@ -28,6 +28,7 @@ public class MapGenerator : MonoBehaviour
 	[HideInInspector]
 	public float mapCenter;
 
+	public static event Action<Vector3> OnHighestPointChanged;
 	public static event Action<Transform> OnViewerChanged; 
 	
 	private Vector3 viewerPosition;
@@ -43,7 +44,12 @@ public class MapGenerator : MonoBehaviour
 	private bool useExistingHeightMap;
 	private HeightMap[,] existingHeightMaps;
 
+	private ImportHeightMap.HeightMapsData heightMapsData;
+
 	private bool chunksNeedUpdating;
+
+	private Vector2 highestPointChunkPos;
+	private bool highestPointFound;
 
 	private void Start()
 	{
@@ -98,22 +104,28 @@ public class MapGenerator : MonoBehaviour
 			visibleTerrainChunks.Clear();
 			visibleTerrainChunksToRemove.Clear();
 		}
-		existingHeightMaps = ImportHeightMap.ConvertToChunks(image, heightMapSettings, meshSettings);
+
+		heightMapsData = ImportHeightMap.ConvertToChunks(image, heightMapSettings, meshSettings);
+		existingHeightMaps = heightMapsData.heightMaps;
+		highestPointChunkPos = heightMapsData.highestPointChunkCoord * meshWorldSize;
+		OnHighestPointChanged?.Invoke(new Vector3(highestPointChunkPos.x, 180, highestPointChunkPos.y));
 		LoadChunks();
 	}
 	
-	private async void LoadChunks()
+	private void LoadChunks()
 	{
 		for (int y = 0; y < existingHeightMaps.GetLength(1); y++)
 		{
 			for (int x = 0; x < existingHeightMaps.GetLength(0); x++)
 			{
-				TerrainChunk newChunk = new TerrainChunk(new Vector2(x, y), heightMapSettings, meshSettings, waterSettings,
-					detailLevels, colliderLODIndex, transform, viewer, mapMaterial, existingHeightMaps);
+				Vector2 coord = new Vector2(x, y);
+				bool highPointOnChunk = coord == heightMapsData.highestPointChunkCoord;
+				TerrainChunk newChunk = new TerrainChunk(coord, heightMapSettings, meshSettings, waterSettings,
+					detailLevels, colliderLODIndex, transform, viewer, mapMaterial, existingHeightMaps, highPointOnChunk);
 				newChunk.Load();
 				terrainChunkDictionary.Add(new Vector2(x, y), newChunk);
 				newChunk.onVisibilityChanged += OnTerrainChunkVisibilityChanged;
-				await Task.Delay(1);
+				newChunk.onFoundHighestPoint += OnHighestPointChanged.Invoke;
 			}
 		}
 	}

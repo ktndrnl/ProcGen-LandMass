@@ -13,6 +13,10 @@ public class TerrainChunk
 	public event Action<TerrainChunk, bool> onVisibilityChanged;
 	
 	public Vector2 coord;
+	public Vector3 highestPoint;
+	public event Action<Vector3> onFoundHighestPoint; 
+	private bool highestPointSet;
+	private bool findHighestPoint;
 
 	private GameObject meshObject;
 	private Vector2 sampleCenter;
@@ -45,7 +49,8 @@ public class TerrainChunk
 	private HeightMap[,] existingHeightMaps;
 
 	public TerrainChunk(Vector2 coord, HeightMapSettings heightMapSettings, MeshSettings meshSettings, WaterSettings waterSettings,
-						LODInfo[] detailLevels, int colliderLODIndex, Transform parent, Transform viewer, Material material, HeightMap[,] existingHeightMaps = null)
+						LODInfo[] detailLevels, int colliderLODIndex, Transform parent, Transform viewer, Material material, HeightMap[,] existingHeightMaps = null,
+						bool findHighestPoint = false)
 	{
 		this.coord = coord;
 		this.detailLevels = detailLevels;
@@ -54,6 +59,7 @@ public class TerrainChunk
 		this.meshSettings = meshSettings;
 		this.waterSettings = waterSettings;
 		this.viewer = viewer;
+		this.findHighestPoint = findHighestPoint;
 		MapGenerator.OnViewerChanged += OnViewerChanged;
 
 		useExistingHeightMaps = heightMapSettings.useExistingHeightMap;
@@ -167,7 +173,14 @@ public class TerrainChunk
 						break;
 					}
 				}
-
+				
+				if (findHighestPoint && !highestPointSet && lodIndex == 0 && lodMeshes[lodIndex].hasMesh)
+				{
+					FindHighestPointOnMesh(lodMeshes[lodIndex].mesh);
+					highestPointSet = true;
+					onFoundHighestPoint?.Invoke(highestPoint);
+				}
+				
 				if (lodIndex != previousLodIndex)
 				{
 					LODMesh lodMesh = lodMeshes[lodIndex];
@@ -232,6 +245,24 @@ public class TerrainChunk
 	public bool IsVisible()
 	{
 		return meshObject.activeSelf;
+	}
+	
+	private void FindHighestPointOnMesh(Mesh mesh)
+	{
+		Vector3[] chunkVertices = mesh.vertices;
+		float maxHeight = float.MinValue;
+		Vector3 highestVertex = Vector3.zero;
+
+		foreach (Vector3 vertex in chunkVertices)
+		{
+			if (vertex.y > maxHeight)
+			{
+				maxHeight = vertex.y;
+				highestVertex = vertex;
+			}
+		}
+
+		highestPoint = meshObject.transform.TransformPoint(highestVertex);
 	}
 
 	private class LODMesh

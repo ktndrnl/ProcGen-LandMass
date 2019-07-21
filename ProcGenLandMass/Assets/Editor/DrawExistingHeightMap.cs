@@ -69,7 +69,7 @@ public class DrawExistingHeightMap : MonoBehaviour
 				}
 			}
 		}
-		HeightMap[,] heightMaps = ImportHeightMap.ConvertToChunks(existingHeightMap, heightMapSettings, meshSettings);
+		HeightMap[,] heightMaps = ImportHeightMap.ConvertToChunks(existingHeightMap, heightMapSettings, meshSettings).heightMaps;
 		PlaceChunks(heightMaps);
 	}
 

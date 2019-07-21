@@ -19,6 +19,7 @@ public class MainMenuCamera : MonoBehaviour
 	{
 		//mapCenter = new Vector3(terrainGenerator.mapCenter, 0, terrainGenerator.mapCenter);
 		//mapCenter = new Vector3(490, 0, 490);
+		MapGenerator.OnHighestPointChanged += OnHighestMapPointChanged;
 		SetPosition();
 	}
 
@@ -58,11 +59,23 @@ public class MainMenuCamera : MonoBehaviour
 		rotationEnabled = false;
 		positionSet = false;
 	}
+
+	private void OnHighestMapPointChanged(Vector3 point)
+	{
+		focalPoint = new Vector3(point.x, point.y * 0.8f, point.z);
+		SetPosition();
+	}
 	
 	private void SetPosition()
 	{
-		transform.position = new Vector3(focalPoint.x * focalPointDistanceMultiplier, cameraHeight, 
-			focalPoint.z * focalPointDistanceMultiplier);
+		transform.position = new Vector3(focalPoint.x + 100f, focalPoint.y + cameraHeight, 
+			focalPoint.z + 100f);
 		positionSet = true;
+	}
+
+	private void OnDrawGizmos()
+	{
+		Gizmos.color = Color.green;
+		Gizmos.DrawWireSphere(focalPoint, 1f);
 	}
 }

@@ -45,13 +45,6 @@ public class TerrainGenerator : MonoBehaviour
 	{
 		textureSettings.ApplyToMaterial(mapMaterial);
 		textureSettings.UpdateMeshHeights(mapMaterial, heightMapSettings.minHeight, heightMapSettings.maxHeight);
-
-		useExistingHeightMap = heightMapSettings.useExistingHeightMap;
-		if (useExistingHeightMap)
-		{
-			existingHeightMaps =
-				ImportHeightMap.ConvertToChunks(heightMapSettings.heightMapImage, heightMapSettings, meshSettings);
-		}
 		
 		float maxViewDst = detailLevels[detailLevels.Length - 1].visibleDstThreshold;
 		meshWorldSize = meshSettings.meshWorldSize;
